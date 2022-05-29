@@ -22,5 +22,6 @@ export const getSelectorFromCursor = (
   if (!element) {
     return '';
   }
+
   return finder(element, { root: document.body });
 };
