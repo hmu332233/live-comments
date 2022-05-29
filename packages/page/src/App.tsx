@@ -178,7 +178,7 @@ function App({}: Props) {
         {!isScrolling && (
           <div className="absolute w-full top-0 left-0">
             {commentsWithPosition
-              .filter((v) => v.show)
+              .filter((v) => v.show && !v.resolved)
               .map(({ text, x, y }, index) => (
                 <CommentBox position={{ x, y }} text={text} />
               ))}
