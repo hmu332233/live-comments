@@ -1,12 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { optimizeScroll, getSelectorFromCursor } from './utils';
+import CommentInput from './components/CommentInput';
+import Comment from './components/Comment';
+
+type Comment = {
+  selector: string;
+  text: string;
+};
 
 type Props = {};
 
 function App({}: Props) {
+  const [commentPosition, setCommentPosition] = useState({
+    show: false,
+    x: 0,
+    y: 0,
+    selector: '',
+  });
+
   const [isScrolling, setIsScrolling] = useState(false);
-  const [items, setItems] = useState([]);
-  const [selectors, setSelectors] = useState([]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsWithPosition, setCommentsWithPosition] = useState([]);
   const ref = useRef<HTMLIFrameElement>(null);
 
   const handleLoaded = () => {
@@ -24,7 +38,15 @@ function App({}: Props) {
       console.log(selector);
 
       // setItems(v => [...v, { x, y, offsetY, selector }]);
-      setSelectors((v) => [...v, selector]);
+      // setSelectors((v) => [...v, selector]);
+
+      setCommentPosition({
+        show: true,
+        x: event.clientX,
+        y: event.clientY,
+        selector,
+      });
+
       event.preventDefault();
       event.stopPropagation();
     };
@@ -38,10 +60,11 @@ function App({}: Props) {
     contentDocument.body.addEventListener('click', getCursor, false);
 
     var timeoutId;
-    contentDocument.addEventListener(
+    ref.current.contentWindow.addEventListener(
       'scroll',
       function (event) {
         setIsScrolling(true);
+        setCommentPosition((v) => ({ ...v, show: false }));
         // Clear our timeout throughout the scroll
         window.clearTimeout(timeoutId);
 
@@ -69,18 +92,30 @@ function App({}: Props) {
 
     const bodyRect = contentDocument.body.getBoundingClientRect();
 
-    setItems(
-      selectors.map((selector) => {
+    setCommentsWithPosition(
+      comments.map((comment) => {
         const elemRect = contentDocument
-          .querySelector(selector)
+          .querySelector(comment.selector)
           .getBoundingClientRect();
         const offsetY = elemRect.top - bodyRect.top;
-
-        console.log(offsetY);
-        return { x: elemRect.left, y: elemRect.top, isShowing: offsetY > 0 };
+        return {
+          ...comment,
+          x: elemRect.left,
+          y: elemRect.top,
+          show: offsetY > 0,
+        };
       }),
     );
-  }, [selectors, isScrolling]);
+  }, [comments, isScrolling]);
+
+  const handleSubmit = (text: string) => {
+    const newComment: Comment = {
+      selector: commentPosition.selector,
+      text,
+    };
+    setComments((v) => [...v, newComment]);
+    setCommentPosition((v) => ({ ...v, show: false }));
+  };
 
   return (
     <div className="flex w-screen h-screen">
@@ -91,21 +126,32 @@ function App({}: Props) {
           className="w-full"
           src={location.href}
           onLoad={handleLoaded}
+          sandbox="allow-scripts allow-forms allow-same-origin allow-presentation allow-orientation-lock allow-modals allow-popups-to-escape-sandbox allow-pointer-lock"
         />
         {!isScrolling && (
           <div className="absolute w-full top-0 left-0">
-            {items.map((item) => (
-              <div className="absolute" style={{ left: item.x, top: item.y }}>
-                아이템
-              </div>
-            ))}
+            {commentsWithPosition
+              .filter((v) => v.show)
+              .map(({ text, x, y }, index) => (
+                <Comment position={{ x, y }} text={text} />
+              ))}
+            {commentPosition.show && (
+              <CommentInput
+                onSubmit={handleSubmit}
+                position={{ x: commentPosition.x, y: commentPosition.y }}
+              />
+            )}
           </div>
         )}
       </div>
 
       <div className="w-32">
-        {items.map((item) => (
-          <div>{JSON.stringify(item)}</div>
+        {comments.map((comment) => (
+          <div>{JSON.stringify(comment)}</div>
+        ))}
+        <br />
+        {commentsWithPosition.map((comment) => (
+          <div>{JSON.stringify(comment)}</div>
         ))}
       </div>
     </div>
