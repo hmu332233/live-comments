@@ -16,9 +16,9 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "components/*": ["components/*"],
-      "utils/*": ["utils/*"],
-      "hooks/*": ["hooks/*"]
+      "components/*": ["src/components/*"],
+      "utils/*": ["src/utils/*"],
+      "hooks/*": ["src/hooks/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
