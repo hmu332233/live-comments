@@ -3,9 +3,10 @@
   "name": "web-comments",
   "description": "web-comments",
   "version": "1.0",
-  "browser_action": {
-  },
+  "permissions": ["activeTab"],
+  "browser_action": {},
   "background": {
     "scripts": ["background.js"]
-  }
+  },
+  "content_security_policy": "script-src 'self' http://localhost:1234;"
 }

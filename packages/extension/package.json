@@ -2,5 +2,8 @@
   "name": "extension",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "move": "cp -r * /mnt/d/workspace/web-comments/"
+  }
 }
