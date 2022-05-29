@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { optimizeScroll, getSelectorFromCursor } from './utils';
 import CommentInput from './components/CommentInput';
 import Comment from './components/Comment';
+import HighlightBox from './components/HighlightBox';
 
 type Comment = {
   selector: string;
@@ -18,6 +19,13 @@ function App({}: Props) {
     selector: '',
   });
 
+  const [highlightBoxPosition, setHighlightBoxPosition] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
+
   const [isScrolling, setIsScrolling] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentsWithPosition, setCommentsWithPosition] = useState([]);
@@ -30,7 +38,7 @@ function App({}: Props) {
 
     const contentDocument = ref.current.contentDocument;
     const getCursor = (event: MouseEvent) => {
-      const selector = getSelectorFromCursor(
+      const { selector } = getSelectorFromCursor(
         contentDocument,
         event.clientX,
         event.clientY,
@@ -51,11 +59,23 @@ function App({}: Props) {
       event.stopPropagation();
     };
 
-    // contentDocument.body.addEventListener(
-    //   'mousemove',
-    //   optimizeScroll(getCursor),
-    //   false,
-    // );
+    const handleMouseMove = (event: MouseEvent) => {
+      const { element, x, y } = getSelectorFromCursor(
+        contentDocument,
+        event.clientX,
+        event.clientY,
+      );
+
+      const { offsetWidth: width, offsetHeight: height } = element;
+
+      setHighlightBoxPosition({ width, height, x, y });
+    };
+
+    contentDocument.body.addEventListener(
+      'mousemove',
+      optimizeScroll(handleMouseMove),
+      false,
+    );
 
     contentDocument.body.addEventListener('click', getCursor, false);
 
@@ -120,6 +140,7 @@ function App({}: Props) {
   return (
     <div className="flex w-screen h-screen">
       <div className="flex relative w-full h-full">
+        <HighlightBox {...highlightBoxPosition} />
         <iframe
           id="testFrame"
           ref={ref}

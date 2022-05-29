@@ -20,8 +20,15 @@ export const getSelectorFromCursor = (
 ) => {
   const element = document.elementFromPoint(x, y);
   if (!element) {
-    return '';
+    return {};
   }
 
-  return finder(element, { root: document.body });
+  const rect = element.getBoundingClientRect();
+
+  return {
+    selector: finder(element, { root: document.body }),
+    element,
+    x: rect.left,
+    y: rect.top,
+  };
 };
