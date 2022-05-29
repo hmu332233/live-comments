@@ -26,6 +26,7 @@ function App({}: Props) {
       // setItems(v => [...v, { x, y, offsetY, selector }]);
       setSelectors((v) => [...v, selector]);
       event.preventDefault();
+      event.stopPropagation();
     };
 
     // contentDocument.body.addEventListener(
@@ -34,7 +35,7 @@ function App({}: Props) {
     //   false,
     // );
 
-    contentDocument.body.addEventListener('mouseup', getCursor, false);
+    contentDocument.body.addEventListener('click', getCursor, false);
 
     var timeoutId;
     contentDocument.addEventListener(
