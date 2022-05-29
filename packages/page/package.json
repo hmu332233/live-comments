@@ -10,6 +10,7 @@
   "devDependencies": {
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.5",
+    "daisyui": "^2.15.1",
     "parcel": "^2.6.0",
     "postcss": "^8.4.14",
     "process": "^0.11.10",
@@ -18,6 +19,7 @@
   },
   "dependencies": {
     "@medv/finder": "^2.1.0",
+    "classnames": "^2.3.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   }
