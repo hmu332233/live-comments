@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { optimizeScroll, getSelectorFromCursor } from './utils';
-import CommentInput from './components/CommentInput';
-import Comment from './components/Comment';
-import HighlightBox from './components/HighlightBox';
 
-type Comment = {
-  selector: string;
-  text: string;
-};
+import type { Comment, NormalizedData } from './types';
+
+import {
+  optimizeScroll,
+  getSelectorFromCursor,
+  addNormalizedData,
+} from './utils';
+import CommentInput from './components/CommentInput';
+import CommentBox from './components/CommentBox';
+import HighlightBox from './components/HighlightBox';
+import CommentList from './components/CommentList';
 
 type Props = {};
 
@@ -38,6 +41,9 @@ function App({}: Props) {
 
     const contentDocument = ref.current.contentDocument;
     const getCursor = (event: MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+
       const { selector } = getSelectorFromCursor(
         contentDocument,
         event.clientX,
@@ -47,6 +53,9 @@ function App({}: Props) {
 
       // setItems(v => [...v, { x, y, offsetY, selector }]);
       // setSelectors((v) => [...v, selector]);
+      if (!selector) {
+        return;
+      }
 
       setCommentPosition({
         show: true,
@@ -54,9 +63,6 @@ function App({}: Props) {
         y: event.clientY,
         selector,
       });
-
-      event.preventDefault();
-      event.stopPropagation();
     };
 
     const handleMouseMove = (event: MouseEvent) => {
@@ -130,11 +136,31 @@ function App({}: Props) {
 
   const handleSubmit = (text: string) => {
     const newComment: Comment = {
+      id: `cm_${Date.now()}`,
+      userId: 'mark',
       selector: commentPosition.selector,
       text,
+      timestamp: Date.now(),
     };
     setComments((v) => [...v, newComment]);
     setCommentPosition((v) => ({ ...v, show: false }));
+  };
+
+  const handleItemClick = (id: string) => {
+    console.log('item clicked', id);
+  };
+
+  const handleItemResolveClick = (id: string) => {
+    const index = comments.findIndex((comment) => comment.id === id);
+    setComments((v) => {
+      const newComments = [...v];
+      const comment = newComments[index];
+      newComments[index] = {
+        ...newComments[index],
+        resolved: !comment.resolved,
+      };
+      return newComments;
+    });
   };
 
   return (
@@ -154,7 +180,7 @@ function App({}: Props) {
             {commentsWithPosition
               .filter((v) => v.show)
               .map(({ text, x, y }, index) => (
-                <Comment position={{ x, y }} text={text} />
+                <CommentBox position={{ x, y }} text={text} />
               ))}
             {commentPosition.show && (
               <CommentInput
@@ -165,16 +191,11 @@ function App({}: Props) {
           </div>
         )}
       </div>
-
-      <div className="w-32">
-        {comments.map((comment) => (
-          <div>{JSON.stringify(comment)}</div>
-        ))}
-        <br />
-        {commentsWithPosition.map((comment) => (
-          <div>{JSON.stringify(comment)}</div>
-        ))}
-      </div>
+      <CommentList
+        list={comments}
+        onItemClick={handleItemClick}
+        onItemResolveClick={handleItemResolveClick}
+      />
     </div>
   );
 }
