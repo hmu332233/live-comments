@@ -4,7 +4,7 @@ import useToggle from '../hooks/useToggle';
 type Props = {
   text: string;
   position: { x: number; y: number };
-  openBox: Boolean;
+  openBox?: Boolean;
 };
 
 function CommentPoint({ text, position, openBox }: Props) {
@@ -31,7 +31,12 @@ function CommentPoint({ text, position, openBox }: Props) {
           <div className="card-body p-4 gap-4">
             <p>{text}</p>
             <div className="card-actions justify-end">
-              <button className="btn btn-primary btn-xs">Resolve</button>
+              {/* <button className="btn btn-primary btn-xs">Resolve</button> */}
+              <input
+                type="text"
+                placeholder="Type here"
+                className="input input-sm input-bordered w-full"
+              />
             </div>
           </div>
         </div>
