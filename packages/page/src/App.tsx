@@ -8,7 +8,7 @@ import {
   addNormalizedData,
 } from './utils';
 import CommentInput from './components/CommentInput';
-import CommentBox from './components/CommentBox';
+import CommentPoint from './components/CommentPoint';
 import HighlightBox from './components/HighlightBox';
 import CommentList from './components/CommentList';
 
@@ -180,7 +180,7 @@ function App({}: Props) {
             {commentsWithPosition
               .filter((v) => v.show && !v.resolved)
               .map(({ text, x, y }, index) => (
-                <CommentBox position={{ x, y }} text={text} />
+                <CommentPoint position={{ x, y }} text={text} />
               ))}
             {commentPosition.show && (
               <CommentInput
