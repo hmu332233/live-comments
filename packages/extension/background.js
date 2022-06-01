@@ -1,5 +1,5 @@
-const code = `
-  document.write(\`
+function injectHTML() {
+  document.write(`
     <!doctype html>
     <html>
       <head>
@@ -9,15 +9,18 @@ const code = `
         </head>
         <body>
         <div id="app"></div>
-
-        <script src="http://localhost:1234/index.f3184941.js"></script>
       </body>
     </html>
-  \`);
-`;
+  `);
+}
 
-chrome.browserAction.onClicked.addListener(() => {
-  chrome.tabs.executeScript({
-    code,
+chrome.action.onClicked.addListener((tab) => {
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: injectHTML,
+  });
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    files: ['index.f3184941.js'],
   });
 });

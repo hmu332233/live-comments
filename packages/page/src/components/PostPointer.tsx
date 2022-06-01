@@ -43,8 +43,8 @@ function PostPointer({ post, position, openBox, onCommentSubmit }: Props) {
         <span className="badge badge-info" />
       </span>
       {isBoxOpen && (
-        <div className="card w-48 bg-base-100 shadow-xl ml-20">
-          <div className="card-body p-4 gap-4">
+        <div className="card max-w-xs bg-base-100 shadow-xl ml-20">
+          <div className="card-body p-4 gap-4 max-h-96 overflow-y-auto">
             {comments.map((comment) => (
               <Comment comment={comment} />
             ))}
