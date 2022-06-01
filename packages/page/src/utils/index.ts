@@ -1,5 +1,5 @@
 import { finder } from '@medv/finder';
-import type { NormalizedData } from 'types';
+import type { INormalizedData } from 'types';
 
 export const optimizeScroll = (callback: (event: any) => void) => {
   let ticking = false;
@@ -44,7 +44,7 @@ export const normalizeBy = (key: string) => {
 export const normalizeData = <Type>(
   data: any[],
   key: string,
-): NormalizedData<Type> => {
+): INormalizedData<Type> => {
   return {
     ids: data.map((item) => item[key]),
     entities: data.reduce(normalizeBy(key), {}),
@@ -53,7 +53,7 @@ export const normalizeData = <Type>(
 
 // FIXME: any를 사용하지 않는 방향으로 개선 필요
 export const addNormalizedData = <Type>(
-  { ids, entities }: NormalizedData<Type>,
+  { ids, entities }: INormalizedData<Type>,
   newData: any,
   key: string,
 ) => {
