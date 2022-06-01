@@ -1,6 +1,6 @@
 import React from 'react';
 import { IPost } from 'types';
-
+import Comment from './Comment';
 import cn from 'classnames';
 
 type Props = {
@@ -21,11 +21,7 @@ function PostItem({ item, onClick, onResolveClick }: Props) {
       )}
       onClick={onClick}
     >
-      <div className="text-lg font-extrabold">mark.han</div>
-      <div className="badge badge-ghost">
-        {new Date(item.timestamp).toLocaleString()}
-      </div>
-      <p className="text-base-content/70 text-sm">{firstComment.text}</p>
+      <Comment comment={firstComment} />
       <button
         className="btn btn-primary btn-xs ml-auto"
         onClick={onResolveClick}

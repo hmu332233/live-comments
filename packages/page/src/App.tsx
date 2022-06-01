@@ -155,6 +155,32 @@ function App({}: Props) {
     setCommentPosition((v) => ({ ...v, show: false }));
   };
 
+  const handleCommentSubmit = ({
+    postId,
+    text,
+  }: {
+    postId: string;
+    text: string;
+  }) => {
+    const newComment: IComment = {
+      id: `cm_${Date.now()}`,
+      userId: 'mark',
+      text,
+      timestamp: Date.now(),
+    };
+
+    const index = posts.findIndex((post) => post.id === postId);
+    setPosts((v) => {
+      const newPosts = [...v];
+      const post = newPosts[index];
+      newPosts[index] = {
+        ...post,
+        comments: [...post.comments, newComment],
+      };
+      return newPosts;
+    });
+  };
+
   const handleItemClick = (id: string) => {
     console.log('item clicked', id);
   };
@@ -165,7 +191,7 @@ function App({}: Props) {
       const newPosts = [...v];
       const post = newPosts[index];
       newPosts[index] = {
-        ...newPosts[index],
+        ...post,
         resolved: !post.resolved,
       };
       return newPosts;
@@ -187,12 +213,12 @@ function App({}: Props) {
         {!isScrolling && (
           <div className="absolute w-full top-0 left-0">
             {commentsWithPosition
-              .filter((v) => v.show && !v.resolved)
+              .filter((v) => v.show && !v.post.resolved)
               .map(({ post, x, y }, index) => (
                 <PostPointer
                   position={{ x, y }}
                   post={post}
-                  onCommentSubmit={console.log}
+                  onCommentSubmit={handleCommentSubmit}
                 />
               ))}
             {commentPosition.show && (

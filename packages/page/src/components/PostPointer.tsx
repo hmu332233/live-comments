@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { IPost } from 'types';
 import useToggle from '../hooks/useToggle';
+import Comment from './Comment';
 
 type Props = {
   post: IPost;
   position: { x: number; y: number };
   openBox?: Boolean;
-  onCommentSubmit: (v: string) => void;
+  onCommentSubmit: ({ postId, text }: { postId: string; text: string }) => void;
 };
 
 function PostPointer({ post, position, openBox, onCommentSubmit }: Props) {
@@ -24,7 +25,7 @@ function PostPointer({ post, position, openBox, onCommentSubmit }: Props) {
     const formData = new FormData(e.currentTarget);
     const { comment } = Object.fromEntries(formData);
 
-    onCommentSubmit(comment as string);
+    onCommentSubmit({ postId: post.id, text: comment as string });
 
     e.currentTarget.reset();
     e.preventDefault();
@@ -45,7 +46,7 @@ function PostPointer({ post, position, openBox, onCommentSubmit }: Props) {
         <div className="card w-48 bg-base-100 shadow-xl ml-20">
           <div className="card-body p-4 gap-4">
             {comments.map((comment) => (
-              <p>{comment.text}</p>
+              <Comment comment={comment} />
             ))}
             <div className="card-actions justify-end">
               {/* <button className="btn btn-primary btn-xs">Resolve</button> */}
