@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
+import { IPost } from 'types';
 import useToggle from '../hooks/useToggle';
 
 type Props = {
-  text: string;
+  post: IPost;
   position: { x: number; y: number };
   openBox?: Boolean;
+  onCommentSubmit: (v: string) => void;
 };
 
-function CommentPoint({ text, position, openBox }: Props) {
+function PostPointer({ post, position, openBox, onCommentSubmit }: Props) {
   const [isBoxOpen, toggle, setIsBoxOpen] = useToggle();
 
   useEffect(() => {
@@ -17,6 +19,19 @@ function CommentPoint({ text, position, openBox }: Props) {
   const handlePointClick = () => {
     toggle();
   };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const formData = new FormData(e.currentTarget);
+    const { comment } = Object.fromEntries(formData);
+
+    onCommentSubmit(comment as string);
+
+    e.currentTarget.reset();
+    e.preventDefault();
+  };
+
+  const { comments } = post;
+
   return (
     <div
       className="absolute flex"
@@ -29,14 +44,19 @@ function CommentPoint({ text, position, openBox }: Props) {
       {isBoxOpen && (
         <div className="card w-48 bg-base-100 shadow-xl ml-20">
           <div className="card-body p-4 gap-4">
-            <p>{text}</p>
+            {comments.map((comment) => (
+              <p>{comment.text}</p>
+            ))}
             <div className="card-actions justify-end">
               {/* <button className="btn btn-primary btn-xs">Resolve</button> */}
-              <input
-                type="text"
-                placeholder="Type here"
-                className="input input-sm input-bordered w-full"
-              />
+              <form onSubmit={handleSubmit}>
+                <input
+                  name="comment"
+                  type="text"
+                  placeholder="Type here"
+                  className="input input-sm input-bordered w-full"
+                />
+              </form>
             </div>
           </div>
         </div>
@@ -45,4 +65,4 @@ function CommentPoint({ text, position, openBox }: Props) {
   );
 }
 
-export default CommentPoint;
+export default PostPointer;

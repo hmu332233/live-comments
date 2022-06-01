@@ -1,19 +1,19 @@
 import React from 'react';
-import type { Comment } from '../types';
+import { IPost } from '../types';
 
-import CommentListItem from './CommentListItem';
+import PostItem from './PostItem';
 
 type Props = {
-  list: Comment[];
+  list: IPost[];
   onItemClick: (id: string) => void;
   onItemResolveClick: (id: string) => void;
 };
 
-function CommentList({ list, onItemClick, onItemResolveClick }: Props) {
+function PostList({ list, onItemClick, onItemResolveClick }: Props) {
   return (
     <div className="w-96 border-l">
       {list.map((item) => (
-        <CommentListItem
+        <PostItem
           key={item.id}
           item={item}
           onClick={() => onItemClick(item.id)}
@@ -24,4 +24,4 @@ function CommentList({ list, onItemClick, onItemResolveClick }: Props) {
   );
 }
 
-export default CommentList;
+export default PostList;

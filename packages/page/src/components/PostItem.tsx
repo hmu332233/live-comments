@@ -1,15 +1,18 @@
 import React from 'react';
-import type { Comment } from 'types';
+import { IPost } from 'types';
 
 import cn from 'classnames';
 
 type Props = {
-  item: Comment;
+  item: IPost;
   onClick: () => void;
   onResolveClick: () => void;
 };
 
-function CommentListItem({ item, onClick, onResolveClick }: Props) {
+function PostItem({ item, onClick, onResolveClick }: Props) {
+  const {
+    comments: [firstComment],
+  } = item;
   return (
     <div
       className={cn(
@@ -22,7 +25,7 @@ function CommentListItem({ item, onClick, onResolveClick }: Props) {
       <div className="badge badge-ghost">
         {new Date(item.timestamp).toLocaleString()}
       </div>
-      <p className="text-base-content/70 text-sm">{item.text}</p>
+      <p className="text-base-content/70 text-sm">{firstComment.text}</p>
       <button
         className="btn btn-primary btn-xs ml-auto"
         onClick={onResolveClick}
@@ -33,4 +36,4 @@ function CommentListItem({ item, onClick, onResolveClick }: Props) {
   );
 }
 
-export default CommentListItem;
+export default PostItem;

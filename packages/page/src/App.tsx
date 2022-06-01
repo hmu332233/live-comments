@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import type { Comment, NormalizedData } from './types';
+import { IComment, IPost, IPostPointer } from './types';
 
 import {
   optimizeScroll,
@@ -8,9 +8,9 @@ import {
   addNormalizedData,
 } from './utils';
 import CommentInput from './components/CommentInput';
-import CommentPoint from './components/CommentPoint';
+import PostPointer from './components/PostPointer';
 import HighlightBox from './components/HighlightBox';
-import CommentList from './components/CommentList';
+import PostList from './components/PostList';
 
 type Props = {};
 
@@ -30,8 +30,10 @@ function App({}: Props) {
   });
 
   const [isScrolling, setIsScrolling] = useState(false);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [commentsWithPosition, setCommentsWithPosition] = useState([]);
+  const [posts, setPosts] = useState<IPost[]>([]);
+  const [commentsWithPosition, setCommentsWithPosition] = useState<
+    IPostPointer[]
+  >([]);
   const ref = useRef<HTMLIFrameElement>(null);
 
   const handleLoaded = () => {
@@ -114,35 +116,42 @@ function App({}: Props) {
       return;
     }
 
-    const contentDocument = ref.current.contentDocument;
+    const contentDocument = ref.current.contentDocument as Document;
 
     const bodyRect = contentDocument.body.getBoundingClientRect();
 
     setCommentsWithPosition(
-      comments.map((comment) => {
+      posts.map((post) => {
         const elemRect = contentDocument
-          .querySelector(comment.selector)
+          .querySelector(post.selector)!
           .getBoundingClientRect();
         const offsetY = elemRect.top - bodyRect.top;
         return {
-          ...comment,
+          post,
           x: elemRect.left,
           y: elemRect.top,
           show: offsetY > 0,
         };
       }),
     );
-  }, [comments, isScrolling]);
+  }, [posts, isScrolling]);
 
   const handleSubmit = (text: string) => {
-    const newComment: Comment = {
+    const newComment: IComment = {
       id: `cm_${Date.now()}`,
       userId: 'mark',
-      selector: commentPosition.selector,
       text,
       timestamp: Date.now(),
     };
-    setComments((v) => [...v, newComment]);
+
+    const newPost: IPost = {
+      id: `p_${Date.now()}`,
+      userId: 'mark',
+      selector: commentPosition.selector,
+      timestamp: Date.now(),
+      comments: [newComment],
+    };
+    setPosts((v) => [...v, newPost]);
     setCommentPosition((v) => ({ ...v, show: false }));
   };
 
@@ -151,15 +160,15 @@ function App({}: Props) {
   };
 
   const handleItemResolveClick = (id: string) => {
-    const index = comments.findIndex((comment) => comment.id === id);
-    setComments((v) => {
-      const newComments = [...v];
-      const comment = newComments[index];
-      newComments[index] = {
-        ...newComments[index],
-        resolved: !comment.resolved,
+    const index = posts.findIndex((post) => post.id === id);
+    setPosts((v) => {
+      const newPosts = [...v];
+      const post = newPosts[index];
+      newPosts[index] = {
+        ...newPosts[index],
+        resolved: !post.resolved,
       };
-      return newComments;
+      return newPosts;
     });
   };
 
@@ -179,8 +188,12 @@ function App({}: Props) {
           <div className="absolute w-full top-0 left-0">
             {commentsWithPosition
               .filter((v) => v.show && !v.resolved)
-              .map(({ text, x, y }, index) => (
-                <CommentPoint position={{ x, y }} text={text} />
+              .map(({ post, x, y }, index) => (
+                <PostPointer
+                  position={{ x, y }}
+                  post={post}
+                  onCommentSubmit={console.log}
+                />
               ))}
             {commentPosition.show && (
               <CommentInput
@@ -191,8 +204,8 @@ function App({}: Props) {
           </div>
         )}
       </div>
-      <CommentList
-        list={comments}
+      <PostList
+        list={posts}
         onItemClick={handleItemClick}
         onItemResolveClick={handleItemResolveClick}
       />
