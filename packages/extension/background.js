@@ -31,18 +31,6 @@ chrome.action.onClicked.addListener((tab) => {
     target: { tabId: tab.id },
     files: ['dist/index.6c92a201.js'],
   });
-  firebase
-    .auth()
-    .signInAnonymously()
-    .then((...props) => {
-      // Signed in..
-      console.log(props);
-    })
-    .catch((error) => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // ...
-    });
 
   // chrome.identity.getAuthToken({}, (token) => {
   //   console.log(token)
@@ -59,4 +47,38 @@ chrome.action.onClicked.addListener((tab) => {
 
   //     })
   // })
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  firebase
+    .auth()
+    .signInAnonymously()
+    .then(() => {
+      // Signed in..
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // ...
+    });
+
+  firebase.auth().onAuthStateChanged(function (firebaseUser) {
+    if (!firebaseUser) {
+      return;
+    }
+
+    const {
+      multiFactor: { user },
+    } = firebaseUser;
+
+    console.log(user);
+
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        { action: 'LOGIN_COMPLETE', payload: user },
+        function (response) {},
+      );
+    });
+  });
 });
