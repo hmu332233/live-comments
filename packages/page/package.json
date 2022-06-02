@@ -9,6 +9,7 @@
     "hygen": "hygen"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.188",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.5",
     "daisyui": "^2.15.1",
