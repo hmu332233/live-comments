@@ -22,6 +22,11 @@ export interface IComment {
   timestamp: number;
 }
 
+export interface IUser {
+  id: string;
+  lastLoginAt: string;
+}
+
 export type INormalizedData<Type> = {
   ids: string[];
   entities: { [key: string]: Type };

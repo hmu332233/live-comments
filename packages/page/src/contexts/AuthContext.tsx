@@ -1,35 +1,47 @@
 import React, { useState, createContext, useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
+import { IUser } from 'types';
 
 type AuthActionType = {
   login: () => void;
   logout: () => void;
 };
 
-export const AuthStateContext = createContext<Boolean>(false);
+export const AuthStateContext = createContext<IUser | null>(null);
 export const AuthActionContext = createContext<AuthActionType>(null!);
 
 type AuthProviderProps = { children: React.ReactNode };
 export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<IUser | null>(null);
+
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener(
+      ({ action, payload }, sender, sendResponse) => {
+        setUser({
+          id: payload.uid,
+          lastLoginAt: payload.lastLoginAt,
+        });
+        navigate('/', { replace: true });
+      },
+    );
+  }, []);
 
   const login = () => {
-    setIsLoggedIn(true);
-    navigate('/', { replace: true });
+    chrome.runtime.sendMessage({ action: 'LOGIN' });
   };
 
   const logout = () => {
-    setIsLoggedIn(false);
+    setUser(null);
   };
 
   const action = { login, logout };
 
   return (
     <AuthActionContext.Provider value={action}>
-      <AuthStateContext.Provider value={isLoggedIn}>
+      <AuthStateContext.Provider value={user}>
         {children}
       </AuthStateContext.Provider>
     </AuthActionContext.Provider>
