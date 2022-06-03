@@ -153,6 +153,8 @@ function Main({}: Props) {
     };
     setPosts((v) => [...v, newPost]);
     setCommentPosition((v) => ({ ...v, show: false }));
+
+    chrome.runtime.sendMessage({ action: 'ADD_COMMENT', payload: newPost });
   };
 
   const handleCommentSubmit = ({
