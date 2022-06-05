@@ -11,10 +11,12 @@ import CommentInput from '../components/CommentInput';
 import PostPointer from '../components/PostPointer';
 import HighlightBox from '../components/HighlightBox';
 import PostList from '../components/PostList';
+import Iframe from '../components/Iframe';
 
 type Props = {};
 
 function Main({}: Props) {
+  const [pageId, setPageId] = useState('abcde');
   const [commentPosition, setCommentPosition] = useState({
     show: false,
     x: 0,
@@ -137,16 +139,24 @@ function Main({}: Props) {
   }, [posts, isScrolling]);
 
   useEffect(() => {
+    if (!pageId) {
+      return;
+    }
+
     chrome.runtime.sendMessage({
       action: 'INIT_MAIN',
-      payload: { url: location.href },
+      payload: { pageId },
     });
+  }, [pageId]);
+
+  useEffect(() => {
     chrome.runtime.onMessage.addListener(
       ({ action, payload }, sender, sendResponse) => {
         switch (action) {
           case 'UPDATE_COMMENTS': {
             console.log(payload);
             setPosts(payload);
+            break;
           }
         }
       },
@@ -154,6 +164,11 @@ function Main({}: Props) {
   }, []);
 
   const handleSubmit = (text: string) => {
+    if (!pageId) {
+      alert('로딩 중..');
+      return;
+    }
+
     const newComment: IComment = {
       id: `cm_${Date.now()}`,
       userId: 'mark',
@@ -167,7 +182,7 @@ function Main({}: Props) {
       selector: commentPosition.selector,
       timestamp: Date.now(),
       comments: [newComment],
-      url: location.href,
+      pageId: pageId,
     };
     setCommentPosition((v) => ({ ...v, show: false }));
 
@@ -221,14 +236,7 @@ function Main({}: Props) {
     <div className="flex w-screen h-screen">
       <div className="flex relative w-full h-full">
         <HighlightBox {...highlightBoxPosition} />
-        <iframe
-          id="testFrame"
-          ref={ref}
-          className="w-full"
-          src={location.href}
-          onLoad={handleLoaded}
-          sandbox="allow-scripts allow-forms allow-same-origin allow-presentation allow-orientation-lock allow-modals allow-popups-to-escape-sandbox allow-pointer-lock"
-        />
+        <Iframe ref={ref} src={location.href} onLoad={handleLoaded} />
         {!isScrolling && (
           <div className="absolute w-full top-0 left-0">
             {commentsWithPosition
