@@ -12,7 +12,7 @@ export interface IPost {
   timestamp: number;
   comments: IComment[];
   resolved?: boolean;
-  url?: string;
+  url: string;
 }
 
 export interface IComment {

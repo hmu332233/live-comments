@@ -136,6 +136,23 @@ function Main({}: Props) {
     );
   }, [posts, isScrolling]);
 
+  useEffect(() => {
+    chrome.runtime.sendMessage({
+      action: 'INIT_MAIN',
+      payload: { url: location.href },
+    });
+    chrome.runtime.onMessage.addListener(
+      ({ action, payload }, sender, sendResponse) => {
+        switch (action) {
+          case 'UPDATE_COMMENTS': {
+            console.log(payload);
+            setPosts(payload);
+          }
+        }
+      },
+    );
+  }, []);
+
   const handleSubmit = (text: string) => {
     const newComment: IComment = {
       id: `cm_${Date.now()}`,
@@ -150,8 +167,8 @@ function Main({}: Props) {
       selector: commentPosition.selector,
       timestamp: Date.now(),
       comments: [newComment],
+      url: location.href,
     };
-    setPosts((v) => [...v, newPost]);
     setCommentPosition((v) => ({ ...v, show: false }));
 
     chrome.runtime.sendMessage({ action: 'ADD_COMMENT', payload: newPost });
@@ -218,6 +235,7 @@ function Main({}: Props) {
               .filter((v) => v.show && !v.post.resolved)
               .map(({ post, x, y }, index) => (
                 <PostPointer
+                  key={post.id}
                   position={{ x, y }}
                   post={post}
                   onCommentSubmit={handleCommentSubmit}
