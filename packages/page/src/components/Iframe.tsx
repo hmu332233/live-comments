@@ -1,14 +1,11 @@
-import React, { forwardRef } from 'react';
+import React, { ForwardedRef, forwardRef } from 'react';
 
 type Props = {
   src: string;
   onLoad: () => void;
 };
 
-function Iframe(
-  { src, onLoad }: Props,
-  ref: React.RefObject<HTMLIFrameElement>,
-) {
+function Iframe({ src, onLoad }: Props, ref: ForwardedRef<HTMLIFrameElement>) {
   return (
     <iframe
       ref={ref}
@@ -20,4 +17,4 @@ function Iframe(
   );
 }
 
-export default forwardRef(Iframe);
+export default forwardRef<HTMLIFrameElement, Props>(Iframe);
