@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
+import cn from 'classnames';
 
 type Props = {
   onSubmit: ({ name, code }: { name: string; code: string }) => void;
 };
 
 function LoginModal({ onSubmit }: Props) {
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
     const { name, code } = Object.fromEntries(formData);
 
     onSubmit({ name: name.toString(), code: code.toString() });
+    setIsLoading(true);
     e.preventDefault();
   };
 
@@ -52,7 +55,10 @@ function LoginModal({ onSubmit }: Props) {
                   />
                 </div>
                 <div className="form-control mt-6">
-                  <button className="btn" type="submit">
+                  <button
+                    className={cn('btn', isLoading && 'loading')}
+                    type="submit"
+                  >
                     Login
                   </button>
                 </div>
