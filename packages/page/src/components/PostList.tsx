@@ -11,7 +11,7 @@ type Props = {
 
 function PostList({ list, onItemClick, onItemResolveClick }: Props) {
   return (
-    <div className="w-96 border-l">
+    <div className="w-96 border-l overflow-y-auto">
       {list.map((item) => (
         <PostItem
           key={item.id}
