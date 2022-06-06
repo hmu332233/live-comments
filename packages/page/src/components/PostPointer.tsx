@@ -44,7 +44,7 @@ function PostPointer({
         <span className="badge badge-info" />
       </span>
       {openBox && (
-        <div className="card max-w-xs bg-base-100 shadow-xl ml-20">
+        <div className="card max-w-xs bg-base-100 border ml-20">
           <div className="card-body p-4 gap-4 max-h-96 overflow-y-auto">
             {comments.map((comment) => (
               <Comment comment={comment} />

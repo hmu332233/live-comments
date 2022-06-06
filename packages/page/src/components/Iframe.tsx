@@ -2,7 +2,7 @@ import React, { ForwardedRef, forwardRef } from 'react';
 
 type Props = {
   src: string;
-  onLoad: () => void;
+  onLoad?: () => void;
 };
 
 function Iframe({ src, onLoad }: Props, ref: ForwardedRef<HTMLIFrameElement>) {
