@@ -167,7 +167,6 @@ function Main({}: Props) {
 
   const handleSubmit = (text: string) => {
     const newComment: IComment = {
-      id: `cm_${Date.now()}`,
       userId: user.id,
       userName: user.name,
       text,
@@ -175,7 +174,6 @@ function Main({}: Props) {
     };
 
     const newPost: IPost = {
-      id: `p_${Date.now()}`,
       userId: user.id,
       selector: commentPosition.selector,
       timestamp: Date.now(),
@@ -202,16 +200,12 @@ function Main({}: Props) {
       timestamp: Date.now(),
     };
 
-    const index = posts.findIndex((post) => post.id === postId);
-    setPosts((v) => {
-      const newPosts = [...v];
-      const post = newPosts[index];
-      newPosts[index] = {
-        ...post,
-        comments: [...post.comments, newComment],
-      };
-      return newPosts;
-    });
+    const post = posts.find((post) => post.id === postId)!;
+    const newPost = {
+      ...post,
+      comments: [...post.comments, newComment],
+    };
+    chrome.runtime.sendMessage({ action: 'UPDATE_COMMENT', payload: newPost });
   };
 
   const handleItemClick = (id: string) => {
@@ -219,16 +213,13 @@ function Main({}: Props) {
   };
 
   const handleItemResolveClick = (id: string) => {
-    const index = posts.findIndex((post) => post.id === id);
-    setPosts((v) => {
-      const newPosts = [...v];
-      const post = newPosts[index];
-      newPosts[index] = {
-        ...post,
-        resolved: !post.resolved,
-      };
-      return newPosts;
-    });
+    const post = posts.find((post) => post.id === id)!;
+    const newPost = {
+      ...post,
+      resolved: !post.resolved,
+    };
+
+    chrome.runtime.sendMessage({ action: 'UPDATE_COMMENT', payload: newPost });
   };
 
   return (

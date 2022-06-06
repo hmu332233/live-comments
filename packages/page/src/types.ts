@@ -6,7 +6,7 @@ export interface IPostPointer {
 }
 
 export interface IPost {
-  id: string;
+  id?: string;
   userId: string;
   selector: string;
   timestamp: number;
@@ -16,7 +16,7 @@ export interface IPost {
 }
 
 export interface IComment {
-  id: string;
+  id?: string;
   userId: string;
   userName: string;
   text: string;
