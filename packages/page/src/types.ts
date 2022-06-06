@@ -12,7 +12,7 @@ export interface IPost {
   timestamp: number;
   comments: IComment[];
   resolved?: boolean;
-  pageId: string;
+  pageCode: string;
 }
 
 export interface IComment {
@@ -25,6 +25,16 @@ export interface IComment {
 export interface IUser {
   id: string;
   lastLoginAt: string;
+}
+
+export interface IPage {
+  code: string;
+  url: string;
+}
+
+export interface IAuth {
+  user: IUser;
+  page: IPage;
 }
 
 export type INormalizedData<Type> = {

@@ -1,47 +1,67 @@
-import React, { useState, createContext, useEffect } from 'react';
+import React, {
+  useState,
+  createContext,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
 
 import { useNavigate } from 'react-router-dom';
-import { IUser } from 'types';
+import { IAuth, IUser } from 'types';
 
 type AuthActionType = {
-  login: () => void;
+  login: (code: string) => void;
   logout: () => void;
 };
 
-export const AuthStateContext = createContext<IUser | null>(null);
+export const AuthStateContext = createContext<IAuth | null>(null);
 export const AuthActionContext = createContext<AuthActionType>(null!);
 
 type AuthProviderProps = { children: React.ReactNode };
 export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState<IUser | null>(null);
+  const [auth, setAuth] = useState<IAuth | null>(null);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener(
       ({ action, payload }, sender, sendResponse) => {
-        setUser({
-          id: payload.uid,
-          lastLoginAt: payload.lastLoginAt,
-        });
-        navigate('/', { replace: true });
+        switch (action) {
+          case 'LOGIN_COMPLETE': {
+            const { user, page } = payload;
+            setAuth({
+              user: {
+                id: user.uid,
+                lastLoginAt: user.lastLoginAt,
+              },
+              page: {
+                code: page.code,
+                url: page.url,
+              },
+            });
+            navigate('/', { replace: true });
+          }
+        }
       },
     );
   }, []);
 
-  const login = () => {
-    chrome.runtime.sendMessage({ action: 'LOGIN' });
-  };
+  const login = useCallback((code: string) => {
+    chrome.runtime.sendMessage({
+      action: 'LOGIN',
+      payload: { code: code || 'asdf', url: location.href },
+    });
+  }, []);
 
-  const logout = () => {
-    setUser(null);
-  };
+  const logout = useCallback(() => {
+    setAuth(null);
+  }, []);
 
-  const action = { login, logout };
+  const action = useMemo(() => ({ login, logout }), [login, logout]);
 
   return (
     <AuthActionContext.Provider value={action}>
-      <AuthStateContext.Provider value={user}>
+      <AuthStateContext.Provider value={auth}>
         {children}
       </AuthStateContext.Provider>
     </AuthActionContext.Provider>
