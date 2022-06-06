@@ -12,7 +12,7 @@ function HighlightBox({ width, height, x, y }: Props) {
     <div
       className="absolute outline outline-1 outline-offset-2 pointer-events-none"
       style={{ width, height, left: x, top: y }}
-    ></div>
+    />
   );
 }
 

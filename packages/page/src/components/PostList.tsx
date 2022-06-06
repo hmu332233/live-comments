@@ -16,8 +16,8 @@ function PostList({ list, onItemClick, onItemResolveClick }: Props) {
         <PostItem
           key={item.id}
           item={item}
-          onClick={() => onItemClick(item.id)}
-          onResolveClick={() => onItemResolveClick(item.id)}
+          onClick={() => onItemClick(item.id!)}
+          onResolveClick={() => onItemResolveClick(item.id!)}
         />
       ))}
     </div>

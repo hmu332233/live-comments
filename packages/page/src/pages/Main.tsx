@@ -19,6 +19,7 @@ type Props = {};
 function Main({}: Props) {
   const { user, page } = useContext(AuthStateContext)!;
   const [loaded, setLoaded] = useState(false);
+  const [activePostId, setActivePostId] = useState('');
   const [commentPosition, setCommentPosition] = useState({
     show: false,
     x: 0,
@@ -185,6 +186,10 @@ function Main({}: Props) {
     chrome.runtime.sendMessage({ action: 'ADD_COMMENT', payload: newPost });
   };
 
+  const handlePointerClick = (postId: string) => {
+    setActivePostId(postId);
+  };
+
   const handleCommentSubmit = ({
     postId,
     text,
@@ -208,8 +213,8 @@ function Main({}: Props) {
     chrome.runtime.sendMessage({ action: 'UPDATE_COMMENT', payload: newPost });
   };
 
-  const handleItemClick = (id: string) => {
-    console.log('item clicked', id);
+  const handleItemClick = (postId: string) => {
+    setActivePostId(postId);
   };
 
   const handleItemResolveClick = (id: string) => {
@@ -236,6 +241,8 @@ function Main({}: Props) {
                   key={post.id}
                   position={{ x, y }}
                   post={post}
+                  openBox={activePostId === post.id}
+                  onClick={handlePointerClick}
                   onCommentSubmit={handleCommentSubmit}
                 />
               ))}

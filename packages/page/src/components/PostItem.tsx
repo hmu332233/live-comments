@@ -13,10 +13,16 @@ function PostItem({ item, onClick, onResolveClick }: Props) {
   const {
     comments: [firstComment],
   } = item;
+
+  const handleResolveClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    onResolveClick();
+  };
+
   return (
     <div
       className={cn(
-        'flex flex-col p-4 border-b gap-2',
+        'flex flex-col p-4 border-b gap-2 cursor-pointer hover:bg-base-200',
         item.resolved && 'opacity-20',
       )}
       onClick={onClick}
@@ -24,7 +30,7 @@ function PostItem({ item, onClick, onResolveClick }: Props) {
       <Comment comment={firstComment} />
       <button
         className="btn btn-primary btn-xs ml-auto"
-        onClick={onResolveClick}
+        onClick={handleResolveClick}
       >
         resolve
       </button>

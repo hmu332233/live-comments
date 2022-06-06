@@ -7,25 +7,26 @@ type Props = {
   post: IPost;
   position: { x: number; y: number };
   openBox?: Boolean;
+  onClick: (id: string) => void;
   onCommentSubmit: ({ postId, text }: { postId: string; text: string }) => void;
 };
 
-function PostPointer({ post, position, openBox, onCommentSubmit }: Props) {
-  const [isBoxOpen, toggle, setIsBoxOpen] = useToggle();
-
-  useEffect(() => {
-    setIsBoxOpen(openBox);
-  }, [openBox]);
-
+function PostPointer({
+  post,
+  position,
+  openBox,
+  onClick,
+  onCommentSubmit,
+}: Props) {
   const handlePointClick = () => {
-    toggle();
+    onClick(post.id!);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
     const { comment } = Object.fromEntries(formData);
 
-    onCommentSubmit({ postId: post.id, text: comment as string });
+    onCommentSubmit({ postId: post.id!, text: comment as string });
 
     e.currentTarget.reset();
     e.preventDefault();
@@ -42,7 +43,7 @@ function PostPointer({ post, position, openBox, onCommentSubmit }: Props) {
         <span className="badge badge-info animate-ping absolute opacity-75" />
         <span className="badge badge-info" />
       </span>
-      {isBoxOpen && (
+      {openBox && (
         <div className="card max-w-xs bg-base-100 shadow-xl ml-20">
           <div className="card-body p-4 gap-4 max-h-96 overflow-y-auto">
             {comments.map((comment) => (
