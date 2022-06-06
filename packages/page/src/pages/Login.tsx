@@ -6,6 +6,15 @@ type Props = {};
 function Login({}: Props) {
   const { login } = useContext(AuthActionContext);
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const formData = new FormData(e.currentTarget);
+    const { name, code } = Object.fromEntries(formData);
+
+    login({ name: name as string, code: code as string });
+
+    e.preventDefault();
+  };
+
   return (
     <div className="flex">
       <div className="hero min-h-screen flex-1 bg-neutral-focus text-neutral-content">
@@ -19,21 +28,36 @@ function Login({}: Props) {
       <div className="flex flex-1 justify-center items-center">
         <div className="card w-full max-w-xs">
           <div className="card-body">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Name</span>
-              </label>
-              <input
-                type="text"
-                placeholder="name"
-                className="input input-bordered"
-              />
-            </div>
-            <div className="form-control mt-6">
-              <button className="btn btn-primary" onClick={login}>
-                Login
-              </button>
-            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">이름</span>
+                </label>
+                <input
+                  name="name"
+                  type="text"
+                  placeholder="name"
+                  className="input input-bordered"
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">코드 (Optional)</span>
+                </label>
+                <input
+                  name="code"
+                  type="text"
+                  placeholder="Code"
+                  className="input input-bordered"
+                />
+              </div>
+              <div className="form-control mt-6">
+                <button className="btn btn-primary" type="submit">
+                  Login
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

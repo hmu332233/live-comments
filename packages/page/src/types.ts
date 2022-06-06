@@ -18,12 +18,14 @@ export interface IPost {
 export interface IComment {
   id: string;
   userId: string;
+  userName: string;
   text: string;
   timestamp: number;
 }
 
 export interface IUser {
   id: string;
+  name: string;
   lastLoginAt: string;
 }
 

@@ -7,10 +7,10 @@ import React, {
 } from 'react';
 
 import { useNavigate } from 'react-router-dom';
-import { IAuth, IUser } from 'types';
+import { IAuth } from 'types';
 
 type AuthActionType = {
-  login: (code: string) => void;
+  login: ({ name, code }: { name: string; code: string }) => void;
   logout: () => void;
 };
 
@@ -32,6 +32,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setAuth({
               user: {
                 id: user.uid,
+                name: user.name,
                 lastLoginAt: user.lastLoginAt,
               },
               page: {
@@ -46,12 +47,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     );
   }, []);
 
-  const login = useCallback((code: string) => {
-    chrome.runtime.sendMessage({
-      action: 'LOGIN',
-      payload: { code: code || 'asdf', url: location.href },
-    });
-  }, []);
+  const login = useCallback(
+    ({ code, name }: { code: string; name: string }) => {
+      // TOOD: 랜덤 코드가 생성되도록 추가
+      chrome.runtime.sendMessage({
+        action: 'LOGIN',
+        payload: { name, code: code || 'asdf', url: location.href },
+      });
+    },
+    [],
+  );
 
   const logout = useCallback(() => {
     setAuth(null);

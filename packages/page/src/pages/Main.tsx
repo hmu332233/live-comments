@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { IComment, IPost, IPostPointer } from '../types';
 
@@ -12,11 +12,13 @@ import PostPointer from '../components/PostPointer';
 import HighlightBox from '../components/HighlightBox';
 import PostList from '../components/PostList';
 import Iframe from '../components/Iframe';
+import { AuthStateContext } from '../contexts/AuthContext';
 
 type Props = {};
 
 function Main({}: Props) {
-  const [pageId, setPageId] = useState('abcde');
+  const { user, page } = useContext(AuthStateContext)!;
+  const [loaded, setLoaded] = useState(false);
   const [commentPosition, setCommentPosition] = useState({
     show: false,
     x: 0,
@@ -107,6 +109,8 @@ function Main({}: Props) {
       },
       false,
     );
+
+    setLoaded(true);
   };
 
   useEffect(() => {
@@ -139,17 +143,15 @@ function Main({}: Props) {
   }, [posts, isScrolling]);
 
   useEffect(() => {
-    if (!pageId) {
+    if (!loaded) {
       return;
     }
 
     chrome.runtime.sendMessage({
       action: 'INIT_MAIN',
-      payload: { pageId },
+      payload: { code: page.code },
     });
-  }, [pageId]);
 
-  useEffect(() => {
     chrome.runtime.onMessage.addListener(
       ({ action, payload }, sender, sendResponse) => {
         switch (action) {
@@ -161,28 +163,24 @@ function Main({}: Props) {
         }
       },
     );
-  }, []);
+  }, [loaded]);
 
   const handleSubmit = (text: string) => {
-    if (!pageId) {
-      alert('로딩 중..');
-      return;
-    }
-
     const newComment: IComment = {
       id: `cm_${Date.now()}`,
-      userId: 'mark',
+      userId: user.id,
+      userName: user.name,
       text,
       timestamp: Date.now(),
     };
 
     const newPost: IPost = {
       id: `p_${Date.now()}`,
-      userId: 'mark',
+      userId: user.id,
       selector: commentPosition.selector,
       timestamp: Date.now(),
       comments: [newComment],
-      pageId: pageId,
+      pageCode: page.code,
     };
     setCommentPosition((v) => ({ ...v, show: false }));
 
@@ -198,7 +196,8 @@ function Main({}: Props) {
   }) => {
     const newComment: IComment = {
       id: `cm_${Date.now()}`,
-      userId: 'mark',
+      userId: user.id,
+      userName: user.name,
       text,
       timestamp: Date.now(),
     };
