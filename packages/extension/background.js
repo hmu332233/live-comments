@@ -8,7 +8,7 @@ function injectHTML() {
       <html>
         <head>
           <meta charset="utf-8"/>
-          <title>Page</title>
+          <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
           <link rel="stylesheet" href="http://localhost:1234/index.2ad15953.css">
           </head>
           <body>
@@ -24,7 +24,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const auth = firebaseApp.auth();
 const db = firebaseApp.firestore();
 
-chrome.action.onClicked.addListener((tab) => {
+function initApp(tab) {
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: injectHTML,
@@ -33,6 +33,10 @@ chrome.action.onClicked.addListener((tab) => {
     target: { tabId: tab.id },
     files: ['page/dist/index.f3184941.js'],
   });
+}
+
+chrome.action.onClicked.addListener((tab) => {
+  initApp(tab);
 
   // chrome.identity.getAuthToken({}, (token) => {
   //   console.log(token)
@@ -58,13 +62,16 @@ chrome.runtime.onMessage.addListener(
     console.log(action, payload);
     switch (action) {
       case 'INIT_MAIN': {
-        const { url } = payload;
+        const { code } = payload;
         db.collection('posts')
-          .where('url', '==', url)
+          .where('pageCode', '==', code)
           .onSnapshot((querySnapshot) => {
             var cities = [];
             querySnapshot.forEach((doc) => {
-              cities.push(doc.data());
+              cities.push({
+                id: doc.id,
+                ...doc.data(),
+              });
             });
 
             console.log('호출됨');
@@ -80,6 +87,7 @@ chrome.runtime.onMessage.addListener(
         break;
       }
       case 'LOGIN': {
+        const { name, code, url } = payload;
         auth
           .signInAnonymously()
           .then(() => {
@@ -92,7 +100,7 @@ chrome.runtime.onMessage.addListener(
           });
 
         // 로그인/로그아웃 처리
-        auth.onAuthStateChanged(function (firebaseUser) {
+        auth.onAuthStateChanged(async (firebaseUser) => {
           if (!firebaseUser) {
             return;
           }
@@ -103,10 +111,17 @@ chrome.runtime.onMessage.addListener(
 
           console.log(user);
 
+          console.log('code', code);
+          const docRef = db.collection('pages').doc(code);
+          const doc = await docRef.get();
+          if (!doc.exists) {
+            docRef.set({ code, url });
+          }
+
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             chrome.tabs.sendMessage(tabs[0].id, {
               action: 'LOGIN_COMPLETE',
-              payload: user,
+              payload: { user: { ...user, name }, page: { code, url } },
             });
           });
         });
@@ -121,6 +136,11 @@ chrome.runtime.onMessage.addListener(
           .catch((error) => {
             console.error('Error adding document: ', error);
           });
+        break;
+      }
+      case 'UPDATE_COMMENT': {
+        const { id } = payload;
+        db.collection('posts').doc(id).set(payload);
         break;
       }
     }
