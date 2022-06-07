@@ -166,6 +166,16 @@ function Main({}: Props) {
     );
   }, [loaded]);
 
+  useEffect(() => {
+    window.addEventListener('beforeunload', (e) => {
+      chrome.runtime.sendMessage({
+        action: 'EXIT_MAIN',
+      });
+      e.preventDefault();
+      e.returnValue = '';
+    });
+  }, []);
+
   const handleSubmit = (text: string) => {
     const newComment: IComment = {
       userId: user.id,

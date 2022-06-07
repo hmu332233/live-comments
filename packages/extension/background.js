@@ -9,7 +9,7 @@ function injectHTML() {
         <head>
           <meta charset="utf-8"/>
           <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-          <link rel="stylesheet" href="http://localhost:1234/index.2ad15953.css">
+          <link rel="stylesheet" href="http://localhost:1234/index.433a9dfd.css">
           </head>
           <body>
           <div id="app"></div>
@@ -31,7 +31,7 @@ function initApp(tab) {
   });
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    files: ['page/dist/index.f3184941.js'],
+    files: ['dist/index.6c92a201.js'],
   });
 }
 
@@ -57,14 +57,20 @@ chrome.action.onClicked.addListener((tab) => {
 
 // TODO: background가 꺼졌을때 또는 연결된 페이지들이 꺼졌을때 Snapshot 제거하는 로직 필요함
 
+let unsubscribe;
+
 chrome.runtime.onMessage.addListener(
   ({ action, payload }, sender, sendResponse) => {
     console.log(action, payload);
     switch (action) {
       case 'INIT_MAIN': {
         const { code } = payload;
-        db.collection('posts')
+        unsubscribe?.();
+
+        unsubscribe = db
+          .collection('posts')
           .where('pageCode', '==', code)
+          .orderBy('timestamp', 'desc')
           .onSnapshot((querySnapshot) => {
             var cities = [];
             querySnapshot.forEach((doc) => {
@@ -84,6 +90,10 @@ chrome.runtime.onMessage.addListener(
               });
             });
           });
+        break;
+      }
+      case 'EXIT_MAIN': {
+        unsubscribe?.();
         break;
       }
       case 'LOGIN': {

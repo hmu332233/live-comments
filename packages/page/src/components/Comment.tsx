@@ -9,7 +9,7 @@ function Comment({ comment }: Props) {
   return (
     <div className={'flex flex-col'}>
       <div className="text-lg font-extrabold">{comment.userName}</div>
-      <div className="text-sm">
+      <div className="text-gray-500 text-sm">
         {new Date(comment.timestamp).toLocaleString()}
       </div>
       <p className="mt-2">{comment.text}</p>
