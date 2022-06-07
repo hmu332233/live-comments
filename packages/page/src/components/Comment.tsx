@@ -7,12 +7,12 @@ type Props = {
 
 function Comment({ comment }: Props) {
   return (
-    <div className={'flex flex-col gap-2'}>
+    <div className={'flex flex-col'}>
       <div className="text-lg font-extrabold">{comment.userName}</div>
-      <div className="badge badge-outline">
+      <div className="text-sm">
         {new Date(comment.timestamp).toLocaleString()}
       </div>
-      <p>{comment.text}</p>
+      <p className="mt-2">{comment.text}</p>
     </div>
   );
 }

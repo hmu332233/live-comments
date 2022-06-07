@@ -22,7 +22,7 @@ function PostItem({ item, onClick, onResolveClick }: Props) {
   return (
     <div
       className={cn(
-        'flex flex-col p-4 border-b gap-2 cursor-pointer hover:bg-base-200',
+        'flex flex-col p-4 border-b gap-4 cursor-pointer hover:bg-base-200',
         item.resolved && 'opacity-20',
       )}
       onClick={onClick}
