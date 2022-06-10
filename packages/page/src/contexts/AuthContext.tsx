@@ -31,9 +31,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             const { user, page } = payload;
             setAuth({
               user: {
-                id: user.uid,
+                id: user.id,
                 name: user.name,
-                lastLoginAt: user.lastLoginAt,
+                lastSignInTime: user.lastSignInTime,
               },
               page: {
                 code: page.code,

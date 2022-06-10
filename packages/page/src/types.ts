@@ -26,7 +26,7 @@ export interface IComment {
 export interface IUser {
   id: string;
   name: string;
-  lastLoginAt: string;
+  lastSignInTime: string;
 }
 
 export interface IPage {
