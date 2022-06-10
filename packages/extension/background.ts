@@ -1,6 +1,22 @@
-self.importScripts('firebase/firebase-app.js');
-self.importScripts('firebase/firebase-firestore.js');
-self.importScripts('firebase/firebase-auth.js');
+// self.importScripts('firebase/firebase-app.js');
+// self.importScripts('firebase/firebase-firestore.js');
+// self.importScripts('firebase/firebase-auth.js');
+
+import { initializeApp } from 'firebase/app';
+import {
+  getFirestore,
+  doc,
+  onSnapshot,
+  query,
+  collection,
+  where,
+  orderBy,
+  getDoc,
+  setDoc,
+  addDoc,
+  updateDoc,
+} from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
 function injectHTML() {
   document.write(`
@@ -9,7 +25,7 @@ function injectHTML() {
         <head>
           <meta charset="utf-8"/>
           <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-          <link rel="stylesheet" href="http://localhost:1234/index.433a9dfd.css">
+          <link rel="stylesheet" as="style" href="http://localhost:1234/index.433a9dfd.css">
           </head>
           <body>
           <div id="app"></div>
@@ -18,11 +34,18 @@ function injectHTML() {
     `);
 }
 
-const firebaseConfig = {};
+const firebaseConfig = {
+  apiKey: process.env.apiKey,
+  authDomain: process.env.authDomain,
+  projectId: process.env.projectId,
+  storageBucket: process.env.storageBucket,
+  messagingSenderId: process.env.messagingSenderId,
+  appId: process.env.appId,
+};
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-const auth = firebaseApp.auth();
-const db = firebaseApp.firestore();
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getFirestore(firebaseApp);
 
 function initApp(tab) {
   chrome.scripting.executeScript({
@@ -60,36 +83,37 @@ chrome.action.onClicked.addListener((tab) => {
 let unsubscribe;
 
 chrome.runtime.onMessage.addListener(
-  ({ action, payload }, sender, sendResponse) => {
+  async ({ action, payload }, sender, sendResponse) => {
     console.log(action, payload);
     switch (action) {
       case 'INIT_MAIN': {
         const { code } = payload;
         unsubscribe?.();
 
-        unsubscribe = db
-          .collection('posts')
-          .where('pageCode', '==', code)
-          .orderBy('timestamp', 'desc')
-          .onSnapshot((querySnapshot) => {
-            var cities = [];
-            querySnapshot.forEach((doc) => {
-              cities.push({
-                id: doc.id,
-                ...doc.data(),
-              });
-            });
-
-            console.log('호출됨');
-
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-              console.log(tabs);
-              chrome.tabs.sendMessage(tabs[0].id, {
-                action: 'UPDATE_COMMENTS',
-                payload: cities,
-              });
+        const q = query(
+          collection(db, 'posts'),
+          where('pageCode', '==', code),
+          orderBy('timestamp', 'desc'),
+        );
+        unsubscribe = onSnapshot(q, (querySnapshot) => {
+          var cities = [];
+          querySnapshot.forEach((doc) => {
+            cities.push({
+              id: doc.id,
+              ...doc.data(),
             });
           });
+
+          console.log('호출됨');
+
+          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            console.log(tabs);
+            chrome.tabs.sendMessage(tabs[0].id, {
+              action: 'UPDATE_COMMENTS',
+              payload: cities,
+            });
+          });
+        });
         break;
       }
       case 'EXIT_MAIN': {
@@ -98,8 +122,7 @@ chrome.runtime.onMessage.addListener(
       }
       case 'LOGIN': {
         const { name, code, url } = payload;
-        auth
-          .signInAnonymously()
+        signInAnonymously(auth)
           .then(() => {
             // Signed in..
           })
@@ -110,47 +133,45 @@ chrome.runtime.onMessage.addListener(
           });
 
         // 로그인/로그아웃 처리
-        auth.onAuthStateChanged(async (firebaseUser) => {
+        onAuthStateChanged(auth, async (firebaseUser) => {
           if (!firebaseUser) {
             return;
           }
 
-          const {
-            multiFactor: { user },
-          } = firebaseUser;
-
-          console.log(user);
-
           console.log('code', code);
-          const docRef = db.collection('pages').doc(code);
-          const doc = await docRef.get();
-          if (!doc.exists) {
-            docRef.set({ code, url });
+          const docRef = doc(db, 'pages', code);
+          const docSnap = await getDoc(docRef);
+
+          if (!docSnap.exists()) {
+            setDoc(docRef, { code, url });
           }
 
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             chrome.tabs.sendMessage(tabs[0].id, {
               action: 'LOGIN_COMPLETE',
-              payload: { user: { ...user, name }, page: { code, url } },
+              payload: {
+                user: {
+                  id: firebaseUser.uid,
+                  name,
+                  lastSignInTime: firebaseUser.metadata.lastSignInTime,
+                },
+                page: { code, url },
+              },
             });
           });
         });
         break;
       }
       case 'ADD_COMMENT': {
-        db.collection('posts')
-          .add(payload)
-          .then((docRef) => {
-            console.log('Document written with ID: ', docRef.id);
-          })
-          .catch((error) => {
-            console.error('Error adding document: ', error);
-          });
+        const docRef = await addDoc(collection(db, 'posts'), payload);
+        console.log('Document written with ID: ', docRef.id);
+
         break;
       }
       case 'UPDATE_COMMENT': {
         const { id } = payload;
-        db.collection('posts').doc(id).set(payload);
+        const docRef = doc(db, 'posts', id);
+        await updateDoc(docRef, payload);
         break;
       }
     }
