@@ -2,17 +2,14 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { IComment, IPost, IPostPointer } from '../types';
 
-import {
-  optimizeScroll,
-  getSelectorFromCursor,
-  addNormalizedData,
-} from '../utils';
+import { optimizeScroll, getSelectorFromCursor, isNotEmpty } from '../utils';
 import CommentInput from '../components/CommentInput';
 import PostPointer from '../components/PostPointer';
 import HighlightBox from '../components/HighlightBox';
-import PostList from '../components/PostList';
+import CommentList from '../components/CommentList';
 import Iframe from '../components/Iframe';
 import { AuthStateContext } from '../contexts/AuthContext';
+import Header from '../components/Header';
 
 type Props = {};
 
@@ -93,7 +90,7 @@ function Main({}: Props) {
     contentDocument.body.addEventListener('click', getCursor, false);
 
     var timeoutId;
-    ref.current.contentWindow.addEventListener(
+    ref.current.contentWindow?.addEventListener(
       'scroll',
       function (event) {
         setIsScrolling(true);
@@ -128,18 +125,23 @@ function Main({}: Props) {
     const bodyRect = contentDocument.body.getBoundingClientRect();
 
     setCommentsWithPosition(
-      posts.map((post) => {
-        const elemRect = contentDocument
-          .querySelector(post.selector)!
-          .getBoundingClientRect();
-        const offsetY = elemRect.top - bodyRect.top;
-        return {
-          post,
-          x: elemRect.left,
-          y: elemRect.top,
-          show: offsetY > 0,
-        };
-      }),
+      posts
+        .map((post) => {
+          const element = contentDocument.querySelector(post.selector);
+          if (!element) {
+            return null;
+          }
+
+          const elemRect = element.getBoundingClientRect();
+          const offsetY = elemRect.top - bodyRect.top;
+          return {
+            post,
+            x: elemRect.left,
+            y: elemRect.top,
+            show: offsetY > 0,
+          };
+        })
+        .filter(isNotEmpty),
     );
   }, [posts, isScrolling]);
 
@@ -178,6 +180,7 @@ function Main({}: Props) {
 
   const handleSubmit = (text: string) => {
     const newComment: IComment = {
+      id: `cm_${Date.now()}`,
       userId: user.id,
       userName: user.name,
       text,
@@ -224,6 +227,7 @@ function Main({}: Props) {
   };
 
   const handleItemClick = (postId: string) => {
+    console.log('active', postId);
     setActivePostId(postId);
   };
 
@@ -238,7 +242,8 @@ function Main({}: Props) {
   };
 
   return (
-    <div className="flex w-screen h-screen">
+    <div className="w-screen h-screen">
+      <Header />
       <div className="flex relative w-full h-full">
         <HighlightBox {...highlightBoxPosition} />
         <Iframe ref={ref} src={location.href} onLoad={handleLoaded} />
@@ -264,12 +269,12 @@ function Main({}: Props) {
             )}
           </div>
         )}
+        <CommentList
+          list={posts}
+          onItemClick={handleItemClick}
+          onItemResolveClick={handleItemResolveClick}
+        />
       </div>
-      <PostList
-        list={posts}
-        onItemClick={handleItemClick}
-        onItemResolveClick={handleItemResolveClick}
-      />
     </div>
   );
 }
