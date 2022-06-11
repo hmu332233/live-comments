@@ -19,10 +19,9 @@ function CommentList({ list, onItemClick, onItemResolveClick }: Props) {
     <div className="w-96 border-l overflow-y-auto">
       {comments.map((item) => (
         <PostItem
-          key={item.id}
           item={item}
-          onClick={() => onItemClick(item.id!)}
-          onResolveClick={() => onItemResolveClick(item.id!)}
+          onClick={() => onItemClick(item.postId!)}
+          onResolveClick={() => onItemResolveClick(item.postId!)}
         />
       ))}
     </div>
