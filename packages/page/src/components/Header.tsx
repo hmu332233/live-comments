@@ -9,6 +9,11 @@ type Props = {};
 function Header({}: Props) {
   const auth = useContext(AuthStateContext)!;
   const [isOpen, toggle] = useToggle();
+
+  const handleCloseClick = () => {
+    window.location.reload();
+  };
+
   return (
     <>
       <div className="flex items-center w-full h-12 border-b bg-neutral text-neutral-content p-2">
@@ -19,6 +24,12 @@ function Header({}: Props) {
             onClick={toggle}
           >
             Share
+          </button>
+          <button
+            className="btn btn-xs btn-outline btn-error"
+            onClick={handleCloseClick}
+          >
+            Close
           </button>
           <GithubIcon />
         </div>

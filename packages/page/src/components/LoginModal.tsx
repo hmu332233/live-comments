@@ -6,19 +6,79 @@ type Props = {
 };
 
 function LoginModal({ onSubmit }: Props) {
+  const [loginFormState, setLoginFormState] = useState({
+    step: 'step1',
+    useShareCode: false,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
     const { name, code } = Object.fromEntries(formData);
 
-    onSubmit({ name: name.toString(), code: code.toString() });
+    onSubmit({ name: name.toString(), code: code?.toString() });
     setIsLoading(true);
     e.preventDefault();
   };
 
+  const handleEntryClick = () => {
+    setLoginFormState({ step: 'step2', useShareCode: false });
+  };
+
+  const handleShareClick = () => {
+    setLoginFormState({ step: 'step2', useShareCode: true });
+  };
+
+  const STEPS = {
+    step1: (
+      <>
+        <button className="btn" onClick={handleEntryClick}>
+          현재 페이지에 댓글 남기기
+        </button>
+        <button className="btn btn-outline" onClick={handleShareClick}>
+          공유 코드로 입장하기
+        </button>
+      </>
+    ),
+    step2: (
+      <form onSubmit={handleSubmit}>
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">이름</span>
+          </label>
+          <input
+            name="name"
+            type="text"
+            placeholder="name"
+            className="input input-bordered"
+            required
+          />
+        </div>
+        {loginFormState.useShareCode && (
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">공유 코드</span>
+            </label>
+            <input
+              name="code"
+              type="text"
+              placeholder="Code"
+              className="input input-bordered"
+              required
+            />
+          </div>
+        )}
+        <div className="form-control mt-6">
+          <button className={cn('btn', isLoading && 'loading')} type="submit">
+            입장하기
+          </button>
+        </div>
+      </form>
+    ),
+  };
+
   return (
     <div className="modal modal-open">
-      <div className="modal-box flex p-0 max-w-none">
+      <div className="modal-box flex p-0 max-w-5xl h-full max-h-80">
         <div className="hero flex-1 bg-neutral-focus text-base-100">
           <div className="hero-content flex-col p-12">
             <div className="text-left">
@@ -29,41 +89,7 @@ function LoginModal({ onSubmit }: Props) {
         </div>
         <div className="flex flex-1 justify-center items-center">
           <div className="card w-full max-w-xs">
-            <div className="card-body p-12">
-              <form onSubmit={handleSubmit}>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">이름</span>
-                  </label>
-                  <input
-                    name="name"
-                    type="text"
-                    placeholder="name"
-                    className="input input-bordered"
-                    required
-                  />
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">코드 (Optional)</span>
-                  </label>
-                  <input
-                    name="code"
-                    type="text"
-                    placeholder="Code"
-                    className="input input-bordered"
-                  />
-                </div>
-                <div className="form-control mt-6">
-                  <button
-                    className={cn('btn', isLoading && 'loading')}
-                    type="submit"
-                  >
-                    Login
-                  </button>
-                </div>
-              </form>
-            </div>
+            <div className="card-body p-12">{STEPS[loginFormState.step]}</div>
           </div>
         </div>
       </div>

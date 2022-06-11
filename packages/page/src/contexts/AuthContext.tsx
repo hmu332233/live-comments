@@ -8,6 +8,7 @@ import React, {
 
 import { useNavigate } from 'react-router-dom';
 import { IAuth } from 'types';
+import { nanoid } from 'nanoid';
 
 type AuthActionType = {
   login: ({ name, code }: { name: string; code: string }) => void;
@@ -52,7 +53,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // TOOD: 랜덤 코드가 생성되도록 추가
       chrome.runtime.sendMessage({
         action: 'LOGIN',
-        payload: { name, code: code || 'asdf', url: location.href },
+        payload: { name, code: code || nanoid(11), url: location.href },
       });
     },
     [],
