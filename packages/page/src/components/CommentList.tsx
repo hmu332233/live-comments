@@ -1,5 +1,5 @@
 import React from 'react';
-import { IPost } from '../types';
+import { IComment, IPost } from '../types';
 
 import PostItem from './PostItem';
 
@@ -9,10 +9,15 @@ type Props = {
   onItemResolveClick: (id: string) => void;
 };
 
-function PostList({ list, onItemClick, onItemResolveClick }: Props) {
+function CommentList({ list, onItemClick, onItemResolveClick }: Props) {
+  const comments = list
+    .reduce((arr: IComment[], post) => {
+      return [...arr, ...post.comments];
+    }, [])
+    .sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1));
   return (
     <div className="w-96 border-l overflow-y-auto">
-      {list.map((item) => (
+      {comments.map((item) => (
         <PostItem
           key={item.id}
           item={item}
@@ -24,4 +29,4 @@ function PostList({ list, onItemClick, onItemResolveClick }: Props) {
   );
 }
 
-export default PostList;
+export default CommentList;
