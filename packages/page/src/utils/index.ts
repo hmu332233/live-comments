@@ -62,3 +62,7 @@ export const addNormalizedData = <Type>(
     entities: { ...entities, [newData[key]]: newData },
   };
 };
+
+export function isNotEmpty<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined;
+}
