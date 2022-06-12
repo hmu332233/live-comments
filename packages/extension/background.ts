@@ -1,86 +1,45 @@
-import { ControllerFuncMap } from './types';
+import { ActionName, ControllerFuncMap } from './types';
 import {
   addComment,
   exitMain,
   initMain,
   login,
+  movePage,
   updateComment,
+  validateCode,
 } from './controller';
-
-function test() {
-  location.href = 'https://edu.goorm.io/';
-}
-
-function injectHTML() {
-  document.write(`
-      <!doctype html>
-      <html>
-        <head>
-          <meta charset="utf-8"/>
-          <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-          <link rel="stylesheet" as="style" href="http://localhost:1234/index.1c7c8538.css">
-          </head>
-          <body>
-          <div id="app"></div>
-        </body>
-      </html>
-    `);
-}
-
-function initApp(tab) {
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: injectHTML,
-  });
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    files: ['index.fc65ed09.js'],
-  });
-}
+import { isAction } from './utils/type';
+import { initApp } from './utils/extension';
 
 chrome.action.onClicked.addListener((tab) => {
   initApp(tab);
 });
 
+// TODO: 내부용, 외부용 action 나눠서 관리하기
 const ACTIONS: ControllerFuncMap = {
   INIT_MAIN: initMain,
   EXIT_MAIN: exitMain,
   LOGIN: login,
   ADD_COMMENT: addComment,
   UPDATE_COMMENT: updateComment,
+  VALIDATE_CODE: validateCode,
+  MOVE_PAGE: movePage,
 };
 
-chrome.runtime.onMessage.addListener(
-  async ({ action: actionKey, payload }, sender, sendResponse) => {
-    const action = ACTIONS[actionKey];
+const listener = async (
+  { action: actionKey, payload },
+  sender,
+  sendResponse,
+) => {
+  console.log(actionKey, payload);
 
-    if (!action) {
-      return console.log('정의되지 않은 action 실행', actionKey);
-    }
+  if (!isAction(actionKey)) {
+    return console.log('정의되지 않은 action 실행', actionKey);
+  }
 
-    await action({ payload, sendResponse });
-  },
-);
+  const action = ACTIONS[actionKey as ActionName];
+  await action({ payload, sender, sendResponse });
+};
 
-chrome.runtime.onMessageExternal.addListener(
-  async ({ action: actionKey, payload }, sender, sendResponse) => {
-    console.log(actionKey, sender);
-    const { tab } = sender;
-    if (actionKey === 'SHARE') {
-      if (!tab?.id) {
-        return;
-      }
-
-      sendResponse('say hi!');
-
-      // chrome.scripting.executeScript({
-      //   target: { tabId: tab.id },
-      //   func: test,
-      // }, () => {
-      //   setTimeout(() => {
-      //     initApp(tab);
-      //   }, 3000)
-      // });
-    }
-  },
-);
+chrome.runtime.onMessage.addListener(listener);
+chrome.runtime.onMessageExternal.addListener(listener);

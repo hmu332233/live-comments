@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
-import { sendMessageToPage } from './utils/extension';
+import { sendMessageToPage, initApp } from './utils/extension';
 import { ControllerProps } from './types';
 
 const firebaseConfig = {
@@ -117,4 +117,39 @@ export async function updateComment({ payload }: ControllerProps) {
   const { id } = payload;
   const docRef = doc(db, 'posts', id);
   await updateDoc(docRef, payload);
+}
+
+export async function validateCode({ payload, sendResponse }: ControllerProps) {
+  const { code } = payload;
+
+  const docRef = doc(db, 'pages', code);
+  const docSnap = await getDoc(docRef);
+  const isValid = docSnap.exists();
+
+  sendResponse({
+    isValid,
+    data: docSnap.data(),
+  });
+}
+
+export async function movePage({ payload, sender }: ControllerProps) {
+  const { url } = payload;
+  const { tab } = sender;
+
+  if (!tab?.id) {
+    return;
+  }
+
+  chrome.scripting.executeScript(
+    {
+      target: { tabId: tab.id },
+      func: (url) => {
+        window.location.href = url;
+      },
+      args: [url],
+    },
+    () => {
+      setTimeout(() => initApp(tab), 3000);
+    },
+  );
 }
