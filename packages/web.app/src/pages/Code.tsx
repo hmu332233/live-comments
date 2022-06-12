@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 type Props = {};
 function Code({}: Props) {
   let { code } = useParams();
+  const [isValid, setIsValid] = useState(true);
 
   useEffect(() => {
     const extensionId = process.env.EXTENSION_ID;
@@ -21,7 +22,7 @@ function Code({}: Props) {
         const { isValid, data } = res;
         console.log(isValid, data);
         if (!isValid) {
-          console.log('올바르지 않은 code');
+          setIsValid(false);
           return;
         }
 
@@ -34,10 +35,18 @@ function Code({}: Props) {
   }, []);
 
   return (
-    <div className="flex w-screen h-screen">
-      <div className="flex relative w-full h-full">
-        해당 페이지로 이동합니다.
-      </div>
+    <div className="flex flex-col justify-center items-center gap-4 w-screen h-screen">
+      {isValid ? (
+        <>
+          <h1 className="font-bold text-xl">해당 페이지로 이동합니다.</h1>
+          <progress className="progress progress-primary w-56"></progress>
+        </>
+      ) : (
+        <h1 className="font-bold text-xl">
+          올바르지 않은 URL입니다. <br />
+          공유 URL을 확인해보세요!
+        </h1>
+      )}
     </div>
   );
 }
