@@ -11,15 +11,7 @@ import { IAuth } from 'types';
 import { nanoid } from 'nanoid';
 
 type AuthActionType = {
-  login: ({
-    name,
-    code,
-    useCode,
-  }: {
-    name: string;
-    code: string;
-    useCode: boolean;
-  }) => void;
+  login: ({ name, code }: { name: string; code: string }) => void;
   logout: () => void;
 };
 
@@ -63,22 +55,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = useCallback(
-    ({
-      code,
-      name,
-      useCode,
-    }: {
-      code: string;
-      name: string;
-      useCode: boolean;
-    }) => {
+    ({ code, name }: { code: string; name: string }) => {
       chrome.runtime.sendMessage({
         action: 'LOGIN',
         payload: {
           name,
           code: code || nanoid(11),
           url: location.href,
-          useCode,
         },
       });
     },

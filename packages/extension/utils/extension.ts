@@ -19,7 +19,7 @@ export function initApp(tab) {
   });
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    files: ['index.fc65ed09.js'],
+    files: ['index.9a60d6fe.js'],
   });
 }
 
@@ -30,7 +30,7 @@ function injectHTML() {
         <head>
           <meta charset="utf-8"/>
           <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-          <link rel="stylesheet" as="style" href="http://localhost:1234/index.1c7c8538.css">
+          <link rel="stylesheet" as="style" href="http://localhost:1234/index.f762c381.css">
           </head>
           <body>
           <div id="app"></div>

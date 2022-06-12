@@ -2,22 +2,10 @@ import React, { useState } from 'react';
 import cn from 'classnames';
 
 type Props = {
-  onSubmit: ({
-    name,
-    code,
-    useCode,
-  }: {
-    name: string;
-    code: string;
-    useCode: boolean;
-  }) => void;
+  onSubmit: ({ name, code }: { name: string; code: string }) => void;
 };
 
 function LoginModal({ onSubmit }: Props) {
-  const [loginFormState, setLoginFormState] = useState({
-    step: 'step1',
-    useShareCode: false,
-  });
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
@@ -26,66 +14,9 @@ function LoginModal({ onSubmit }: Props) {
     onSubmit({
       name: name.toString(),
       code: code?.toString(),
-      useCode: loginFormState.useShareCode,
     });
     setIsLoading(true);
     e.preventDefault();
-  };
-
-  const handleEntryClick = () => {
-    setLoginFormState({ step: 'step2', useShareCode: false });
-  };
-
-  const handleShareClick = () => {
-    setLoginFormState({ step: 'step2', useShareCode: true });
-  };
-
-  const STEPS = {
-    step1: (
-      <>
-        <button className="btn" onClick={handleEntryClick}>
-          현재 페이지에 댓글 남기기
-        </button>
-        <button className="btn btn-outline" onClick={handleShareClick}>
-          공유 코드로 입장하기
-        </button>
-      </>
-    ),
-    step2: (
-      <form onSubmit={handleSubmit}>
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">이름</span>
-          </label>
-          <input
-            name="name"
-            type="text"
-            placeholder="name"
-            className="input input-bordered"
-            required
-          />
-        </div>
-        {loginFormState.useShareCode && (
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">공유 코드</span>
-            </label>
-            <input
-              name="code"
-              type="text"
-              placeholder="Code"
-              className="input input-bordered"
-              required
-            />
-          </div>
-        )}
-        <div className="form-control mt-6">
-          <button className={cn('btn', isLoading && 'loading')} type="submit">
-            입장하기
-          </button>
-        </div>
-      </form>
-    ),
   };
 
   return (
@@ -101,7 +32,42 @@ function LoginModal({ onSubmit }: Props) {
         </div>
         <div className="flex flex-1 justify-center items-center">
           <div className="card w-full max-w-xs">
-            <div className="card-body p-12">{STEPS[loginFormState.step]}</div>
+            <div className="card-body p-12">
+              <form onSubmit={handleSubmit}>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">이름</span>
+                  </label>
+                  <input
+                    name="name"
+                    type="text"
+                    placeholder="name"
+                    className="input input-bordered"
+                    required
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">공유 코드</span>
+                  </label>
+                  <input
+                    name="code"
+                    type="text"
+                    value={'추후 고정 값이 들어갑니다.'}
+                    className="input input-bordered"
+                    disabled
+                  />
+                </div>
+                <div className="form-control mt-6">
+                  <button
+                    className={cn('btn', isLoading && 'loading')}
+                    type="submit"
+                  >
+                    입장하기
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

@@ -8,16 +8,8 @@ type Props = {};
 function Login({}: Props) {
   const { login } = useContext(AuthActionContext);
 
-  const handleSubmit = ({
-    name,
-    code,
-    useCode,
-  }: {
-    name: string;
-    code: string;
-    useCode: boolean;
-  }) => {
-    login({ name, code, useCode });
+  const handleSubmit = ({ name, code }: { name: string; code: string }) => {
+    login({ name, code });
   };
 
   return (
