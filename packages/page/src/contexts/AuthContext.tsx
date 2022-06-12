@@ -11,7 +11,15 @@ import { IAuth } from 'types';
 import { nanoid } from 'nanoid';
 
 type AuthActionType = {
-  login: ({ name, code }: { name: string; code: string }) => void;
+  login: ({
+    name,
+    code,
+    useCode,
+  }: {
+    name: string;
+    code: string;
+    useCode: boolean;
+  }) => void;
   logout: () => void;
 };
 
@@ -42,6 +50,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
               },
             });
             navigate('/', { replace: true });
+            break;
+          }
+          case 'LOGIN_FAIL': {
+            const { page } = payload;
+            navigate('/not', { replace: true, state: { url: page.url } });
+            break;
           }
         }
       },
@@ -49,11 +63,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = useCallback(
-    ({ code, name }: { code: string; name: string }) => {
-      // TOOD: 랜덤 코드가 생성되도록 추가
+    ({
+      code,
+      name,
+      useCode,
+    }: {
+      code: string;
+      name: string;
+      useCode: boolean;
+    }) => {
       chrome.runtime.sendMessage({
         action: 'LOGIN',
-        payload: { name, code: code || nanoid(11), url: location.href },
+        payload: {
+          name,
+          code: code || nanoid(11),
+          url: location.href,
+          useCode,
+        },
       });
     },
     [],

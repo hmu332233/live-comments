@@ -2,32 +2,27 @@ import { AuthActionContext } from '../contexts/AuthContext';
 import React, { useContext, useEffect } from 'react';
 import Iframe from '../components/Iframe';
 import LoginModal from '../components/LoginModal';
+import { useLocation } from 'react-router-dom';
 
 type Props = {};
 
-function Login({}: Props) {
-  const { login } = useContext(AuthActionContext);
+function Not({}: Props) {
+  // const { state: { url } } = useLocation();
 
-  const handleSubmit = ({
-    name,
-    code,
-    useCode,
-  }: {
-    name: string;
-    code: string;
-    useCode: boolean;
-  }) => {
-    login({ name, code, useCode });
-  };
+  useEffect(() => {
+    chrome.runtime.sendMessage('nncehbhgcgjelpihekdbihfelkdmonhc', {
+      action: 'TEST',
+    });
+  }, []);
 
   return (
     <div className="flex w-screen h-screen">
       <div className="flex relative w-full h-full">
-        <Iframe src={location.href} />
-        <LoginModal onSubmit={handleSubmit} />
+        {/* {url} */}
+        해당 페이지로 이동합니다.
       </div>
     </div>
   );
 }
 
-export default Login;
+export default Not;

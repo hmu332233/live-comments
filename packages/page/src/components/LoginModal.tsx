@@ -2,7 +2,15 @@ import React, { useState } from 'react';
 import cn from 'classnames';
 
 type Props = {
-  onSubmit: ({ name, code }: { name: string; code: string }) => void;
+  onSubmit: ({
+    name,
+    code,
+    useCode,
+  }: {
+    name: string;
+    code: string;
+    useCode: boolean;
+  }) => void;
 };
 
 function LoginModal({ onSubmit }: Props) {
@@ -15,7 +23,11 @@ function LoginModal({ onSubmit }: Props) {
     const formData = new FormData(e.currentTarget);
     const { name, code } = Object.fromEntries(formData);
 
-    onSubmit({ name: name.toString(), code: code?.toString() });
+    onSubmit({
+      name: name.toString(),
+      code: code?.toString(),
+      useCode: loginFormState.useShareCode,
+    });
     setIsLoading(true);
     e.preventDefault();
   };
