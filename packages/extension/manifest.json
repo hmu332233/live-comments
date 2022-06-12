@@ -8,5 +8,9 @@
   "background": {
     "service_worker": "background.ts",
     "type": "module"
+  },
+  "host_permissions": ["<all_urls>"],
+  "externally_connectable": {
+    "matches": ["http://localhost:1234/*"]
   }
 }

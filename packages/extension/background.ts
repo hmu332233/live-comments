@@ -7,6 +7,10 @@ import {
   updateComment,
 } from './controller';
 
+function test() {
+  location.href = 'https://edu.goorm.io/';
+}
+
 function injectHTML() {
   document.write(`
       <!doctype html>
@@ -14,7 +18,7 @@ function injectHTML() {
         <head>
           <meta charset="utf-8"/>
           <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-          <link rel="stylesheet" as="style" href="http://localhost:1234/index.433a9dfd.css">
+          <link rel="stylesheet" as="style" href="http://localhost:1234/index.1c7c8538.css">
           </head>
           <body>
           <div id="app"></div>
@@ -30,7 +34,7 @@ function initApp(tab) {
   });
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    files: ['dist/index.6c92a201.js'],
+    files: ['index.fc65ed09.js'],
   });
 }
 
@@ -51,9 +55,32 @@ chrome.runtime.onMessage.addListener(
     const action = ACTIONS[actionKey];
 
     if (!action) {
-      console.log('정의되지 않은 action 실행');
+      return console.log('정의되지 않은 action 실행', actionKey);
     }
 
     await action({ payload, sendResponse });
+  },
+);
+
+chrome.runtime.onMessageExternal.addListener(
+  async ({ action: actionKey, payload }, sender, sendResponse) => {
+    console.log(actionKey, sender);
+    const { tab } = sender;
+    if (actionKey === 'SHARE') {
+      if (!tab?.id) {
+        return;
+      }
+
+      sendResponse('say hi!');
+
+      // chrome.scripting.executeScript({
+      //   target: { tabId: tab.id },
+      //   func: test,
+      // }, () => {
+      //   setTimeout(() => {
+      //     initApp(tab);
+      //   }, 3000)
+      // });
+    }
   },
 );
