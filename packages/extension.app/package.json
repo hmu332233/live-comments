@@ -1,5 +1,5 @@
 {
-  "name": "page",
+  "name": "extension.app",
   "version": "1.0.0",
   "license": "MIT",
   "source": "src/index.html",
@@ -15,7 +15,6 @@
     "daisyui": "^2.15.1",
     "parcel": "^2.6.0",
     "postcss": "^8.4.14",
-    "process": "^0.11.10",
     "tailwindcss": "^3.0.24",
     "typescript": "^4.7.2"
   },
