@@ -13,6 +13,7 @@
     "prettier": "2.6.2"
   },
   "scripts": {
+    "dev": "yarn workspace extension build --dist-dir ../../dist; yarn workspace page dev --dist-dir ../../dist",
     "prepare": "husky install"
   }
 }
