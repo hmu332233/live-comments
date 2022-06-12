@@ -11,6 +11,6 @@
   },
   "host_permissions": ["<all_urls>"],
   "externally_connectable": {
-    "matches": ["http://localhost:1234/*"]
+    "matches": ["http://localhost:1234/*", "https://live-comments.minung.dev/*"]
   }
 }
