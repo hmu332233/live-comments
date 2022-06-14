@@ -28,7 +28,7 @@ function Code({}: Props) {
 
         chrome.runtime.sendMessage(extensionId, {
           action: 'MOVE_PAGE',
-          payload: { url: data.url },
+          payload: { url: data.url, code },
         });
       },
     );
