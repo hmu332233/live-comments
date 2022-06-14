@@ -133,23 +133,24 @@ export async function validateCode({ payload, sendResponse }: ControllerProps) {
 }
 
 export async function movePage({ payload, sender }: ControllerProps) {
-  const { url } = payload;
+  const { url, code } = payload;
   const { tab } = sender;
 
-  if (!tab?.id) {
+  const tabId = tab?.id;
+  if (!tabId) {
     return;
   }
 
   chrome.scripting.executeScript(
     {
-      target: { tabId: tab.id },
+      target: { tabId },
       func: (url) => {
         window.location.href = url;
       },
       args: [url],
     },
     () => {
-      setTimeout(() => initApp(tab), 3000);
+      setTimeout(() => initApp(tabId, code), 3000);
     },
   );
 }

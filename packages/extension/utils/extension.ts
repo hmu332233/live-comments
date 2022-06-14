@@ -12,28 +12,32 @@ export function sendMessageToPage({ action, payload }: sendMessageProps) {
   });
 }
 
-export function initApp(tab) {
+export function initApp(tabId: number, code?: string) {
   chrome.scripting.executeScript({
-    target: { tabId: tab.id },
+    target: { tabId },
     func: injectHTML,
+    args: [code || ''],
   });
   chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    files: ['index.9a60d6fe.js'],
+    target: { tabId },
+    files: ['index.dba38bc7.js'],
   });
 }
 
-function injectHTML() {
+function injectHTML(code: string) {
   document.write(`
       <!doctype html>
       <html>
         <head>
           <meta charset="utf-8"/>
           <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-          <link rel="stylesheet" as="style" href="http://localhost:1234/index.f762c381.css">
+          <link rel="stylesheet" as="style" href="http://localhost:1234/index.58418842.css">
           </head>
           <body>
           <div id="app"></div>
+          <script id="__LIVE_COMMENTS_DATA__" type="application/json">{"props": { "code": "${
+            code || ''
+          }"}}</script>
         </body>
       </html>
     `);

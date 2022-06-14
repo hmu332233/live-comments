@@ -12,7 +12,11 @@ import { isAction } from './utils/type';
 import { initApp } from './utils/extension';
 
 chrome.action.onClicked.addListener((tab) => {
-  initApp(tab);
+  if (!tab.id) {
+    return;
+  }
+
+  initApp(tab.id);
 });
 
 // TODO: 내부용, 외부용 action 나눠서 관리하기
