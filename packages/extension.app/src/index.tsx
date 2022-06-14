@@ -6,9 +6,12 @@ import './global.css';
 import App from './App';
 
 const container = document.getElementById('app');
+const { props } = JSON.parse(
+  document.getElementById('__LIVE_COMMENTS_DATA__')!.innerText,
+);
 const root = createRoot(container!); // createRoot(container!) if you use TypeScript
 root.render(
   <MemoryRouter>
-    <App />
+    <App initalData={props} />
   </MemoryRouter>,
 );

@@ -6,25 +6,28 @@ import Login from './pages/Login';
 import Not from './pages/Not';
 import RequireAuth from './components/RequireAuth';
 import { AuthProvider } from './contexts/AuthContext';
+import { ServerPropsProvider } from './contexts/ServerPropsContext';
 
-type Props = {};
+type Props = { initalData: any };
 
-function App({}: Props) {
+function App({ initalData }: Props) {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <RequireAuth>
-              <Main />
-            </RequireAuth>
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        {/* <Route path="*" element={<NoMatch />} /> */}
-      </Routes>
-    </AuthProvider>
+    <ServerPropsProvider value={initalData}>
+      <AuthProvider>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <Main />
+              </RequireAuth>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          {/* <Route path="*" element={<NoMatch />} /> */}
+        </Routes>
+      </AuthProvider>
+    </ServerPropsProvider>
   );
 }
 

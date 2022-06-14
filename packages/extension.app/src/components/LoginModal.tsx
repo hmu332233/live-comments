@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import cn from 'classnames';
 
 type Props = {
+  code: string;
   onSubmit: ({ name, code }: { name: string; code: string }) => void;
 };
 
-function LoginModal({ onSubmit }: Props) {
+function LoginModal({ code, onSubmit }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
@@ -46,18 +47,21 @@ function LoginModal({ onSubmit }: Props) {
                     required
                   />
                 </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">공유 코드</span>
-                  </label>
-                  <input
-                    name="code"
-                    type="text"
-                    value={'추후 고정 값이 들어갑니다.'}
-                    className="input input-bordered"
-                    disabled
-                  />
-                </div>
+                {code && (
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">공유 코드</span>
+                    </label>
+                    <input
+                      name="code"
+                      type="text"
+                      value={code}
+                      className="input input-bordered"
+                      readOnly
+                    />
+                  </div>
+                )}
+
                 <div className="form-control mt-6">
                   <button
                     className={cn('btn', isLoading && 'loading')}
