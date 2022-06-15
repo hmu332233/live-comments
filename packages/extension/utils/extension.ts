@@ -18,9 +18,13 @@ export function initApp(tabId: number, code?: string) {
     func: injectHTML,
     args: [code || ''],
   });
+  chrome.scripting.insertCSS({
+    target: { tabId },
+    files: ['index.f762c381.css'],
+  });
   chrome.scripting.executeScript({
     target: { tabId },
-    files: ['index.dba38bc7.js'],
+    files: ['index.9a60d6fe.js'],
   });
 }
 
@@ -31,7 +35,6 @@ function injectHTML(code: string) {
         <head>
           <meta charset="utf-8"/>
           <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-          <link rel="stylesheet" as="style" href="http://localhost:1234/index.58418842.css">
           </head>
           <body>
           <div id="app"></div>

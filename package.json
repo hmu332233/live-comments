@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "yarn workspace extension build --dist-dir ../../dist; yarn workspace extension.app dev --dist-dir ../../dist",
     "dev:win": "yarn workspace extension build --dist-dir /mnt/d/workspace/web-comments/; yarn workspace extension.app dev --dist-dir /mnt/d/workspace/web-comments/",
+    "build": "yarn workspace extension build --dist-dir ../../product; yarn workspace extension.app build --dist-dir ../../product",
     "prepare": "husky install"
   }
 }
