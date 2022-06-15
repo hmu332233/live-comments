@@ -17,7 +17,7 @@ function Header({}: Props) {
   return (
     <>
       <div className="flex items-center w-full h-12 border-b bg-neutral text-neutral-content p-2">
-        <span className="font-extrabold">Live Comment</span>
+        <span className="font-extrabold">Live Comments</span>
         <div className="flex gap-2 ml-auto">
           <button
             className="btn btn-xs btn-outline btn-primary"

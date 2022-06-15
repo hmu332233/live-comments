@@ -229,6 +229,15 @@ function Main({}: Props) {
   const handleItemClick = (postId: string) => {
     console.log('active', postId);
     setActivePostId(postId);
+
+    // NOTE: 컨셉 확인용 코드. 추후에 옮기기
+    const contentDocument = ref.current?.contentDocument as Document;
+    const post = posts.find((post) => post.id === postId)!;
+
+    const element = contentDocument.querySelector(post.selector);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   };
 
   const handleItemResolveClick = (id: string) => {
