@@ -5,7 +5,7 @@ type Props = {};
 function GithubIcon({}: Props) {
   return (
     <a
-      href="https://github.com/hmu332233/web-comments"
+      href="https://github.com/hmu332233/live-comments"
       target="_blank"
       rel="noreferrer"
     >
