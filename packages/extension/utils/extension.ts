@@ -20,11 +20,11 @@ export function initApp(tabId: number, code?: string) {
   });
   chrome.scripting.insertCSS({
     target: { tabId },
-    files: ['index.f762c381.css'],
+    files: ['index.58418842.css'],
   });
   chrome.scripting.executeScript({
     target: { tabId },
-    files: ['index.9a60d6fe.js'],
+    files: ['index.dba38bc7.js'],
   });
 }
 
