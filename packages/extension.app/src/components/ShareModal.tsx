@@ -18,7 +18,7 @@ function ShareModal({ isOpen, toggle, code }: Props) {
     } else {
       // share api 지원하지 않을시 clipboard 복사로 대체
       await navigator.clipboard.writeText(url);
-      alert('복사되었습니다.');
+      alert('Copied!');
     }
   };
 
@@ -34,7 +34,7 @@ function ShareModal({ isOpen, toggle, code }: Props) {
       <label htmlFor="share-modal" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
           <h3 className="text-lg font-bold">Share</h3>
-          <p className="py-4">다음 URL을 동료에게 공유해주세요!</p>
+          <p className="py-4">Share the URL with your collaborators!</p>
           <div className="input-group">
             <input
               type="text"

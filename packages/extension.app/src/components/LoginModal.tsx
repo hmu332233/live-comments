@@ -26,8 +26,8 @@ function LoginModal({ code, onSubmit }: Props) {
         <div className="hero flex-1 bg-neutral-focus text-base-100">
           <div className="hero-content flex-col p-12">
             <div className="text-left">
-              <h1 className="text-5xl font-bold">Live Comment</h1>
-              <p className="mt-6">실제 웹페이지에 댓글을 남겨 QA를 해보세요!</p>
+              <h1 className="text-5xl font-bold">Live Comments</h1>
+              <p className="mt-6">Try QA by commenting on the live web page!</p>
             </div>
           </div>
         </div>
@@ -37,7 +37,7 @@ function LoginModal({ code, onSubmit }: Props) {
               <form onSubmit={handleSubmit}>
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">이름</span>
+                    <span className="label-text">Name</span>
                   </label>
                   <input
                     name="name"
@@ -50,7 +50,7 @@ function LoginModal({ code, onSubmit }: Props) {
                 {code && (
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text">공유 코드</span>
+                      <span className="label-text">Share Code</span>
                     </label>
                     <input
                       name="code"
@@ -67,7 +67,7 @@ function LoginModal({ code, onSubmit }: Props) {
                     className={cn('btn', isLoading && 'loading')}
                     type="submit"
                   >
-                    입장하기
+                    SignIn
                   </button>
                 </div>
               </form>
