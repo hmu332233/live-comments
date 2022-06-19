@@ -7,7 +7,7 @@ function Main({}: Props) {
       <div className="hero-content text-center">
         <div className="max-w-md">
           <h1 className="text-5xl font-bold">Live Comments</h1>
-          <p className="py-6">실제 웹페이지에 댓글을 남겨 QA를 해보세요!</p>
+          <p className="py-6">Try QA by commenting on the live web page!</p>
         </div>
       </div>
     </div>

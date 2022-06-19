@@ -38,13 +38,13 @@ function Code({}: Props) {
     <div className="flex flex-col justify-center items-center gap-4 w-screen h-screen">
       {isValid ? (
         <>
-          <h1 className="font-bold text-xl">해당 페이지로 이동합니다.</h1>
+          <h1 className="font-bold text-xl">Moving to shared URL.</h1>
           <progress className="progress progress-primary w-56"></progress>
         </>
       ) : (
         <h1 className="font-bold text-xl">
-          올바르지 않은 URL입니다. <br />
-          공유 URL을 확인해보세요!
+          Invalid URL. <br />
+          Check out the shared URL!
         </h1>
       )}
     </div>
