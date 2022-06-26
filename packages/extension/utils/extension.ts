@@ -24,7 +24,7 @@ export function initApp(tabId: number, code?: string) {
   });
   chrome.scripting.executeScript({
     target: { tabId },
-    files: ['index.1249ad80.js'],
+    files: ['index.828460d1.js'],
   });
 }
 
